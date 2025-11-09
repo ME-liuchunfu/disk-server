@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
+    "axios": "^1.13.2",
+    "element-plus": "^2.11.7",
+    "highlight.js": "^11.11.1",
+    "video.js": "^8.23.4",
+    "vue-router": "^4.6.3",
+    "vue3-audio-player": "^1.0.7"
+  }
+}

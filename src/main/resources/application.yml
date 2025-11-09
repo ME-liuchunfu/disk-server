@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: disk-server
+
+  datasource:
+    # MySQL 连接信息
+    url: jdbc:mysql://192.168.31.200:3306/disk_server?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ubuntu
+    password: ubuntu@2025@ubuntu
+    driver-class-name: com.mysql.cj.jdbc.Driver # MySQL 8.x 驱动类，5.x 用 com.mysql.jdbc.Driver
+
+    # HikariCP 连接池配置（可选，默认值已优化，按需调整）
+    hikari:
+      maximum-pool-size: 10 # 最大连接数（默认 10）
+      minimum-idle: 5 # 最小空闲连接数（默认与最大连接数一致，建议设置为与 maximum-pool-size 相同）
+      idle-timeout: 300000 # 空闲连接超时时间（毫秒，默认 600000ms=10分钟）
+      connection-timeout: 20000 # 连接超时时间（毫秒，默认 30000ms=30秒）
+      max-lifetime: 1800000 # 连接最大存活时间（毫秒，默认 1800000ms=30分钟）
+      connection-test-query: SELECT 1 # 连接测试 SQL（MySQL 可用此语句，默认不配置时 Hikari 会自动检测）
+      pool-name: MySQL-Hikari-Pool # 连接池名称（用于日志区分）
+
+# MyBatis-Plus 配置（可选，按需配置）
+mybatis-plus:
+  # Mapper XML 文件路径（如果使用 XML 编写 SQL）
+  mapper-locations: classpath:mapper/**/*.xml
+  # 实体类包路径（用于别名映射）
+  type-aliases-package: com.spring.boot.disk.server.entity
+  # 全局配置
+  global-config:
+    db-config:
+      # 主键生成策略（如自增、雪花算法等）
+      id-type: AUTO
+      # 表名前缀（如果数据库表名有统一前缀）
+      table-prefix: t_
+  # 日志配置（可选，打印 SQL 方便调试）
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+server:
+  port: 8082
+debug: true
+
+
