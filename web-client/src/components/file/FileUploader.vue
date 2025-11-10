@@ -36,7 +36,7 @@
 <script setup>
 import { ref, defineEmits } from 'vue'
 import { UploadFilled } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElUpload, ElProgress } from 'element-plus'
 
 const fileList = ref([])
 const progress = ref(0)
