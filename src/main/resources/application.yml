@@ -1,10 +1,21 @@
+
+disk:
+  server:
+    save-path: E://temp/disk
+    form-env: true
+
 spring:
   application:
     name: disk-server
 
+  servlet:
+    multipart:
+      location: ${java.io.tmpdir}
+      max-file-size: 10GB
+      max-request-size: 10GB
   datasource:
     # MySQL 连接信息
-    url: jdbc:mysql://192.168.31.200:3306/disk_server?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://14.103.137.120:3306/disk_server?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
     username: ubuntu
     password: ubuntu@2025@ubuntu
     driver-class-name: com.mysql.cj.jdbc.Driver # MySQL 8.x 驱动类，5.x 用 com.mysql.jdbc.Driver
