@@ -38,14 +38,11 @@ public class ApiAuthController {
 
     @RequestMapping("/logout")
     public Rs logout() {
-        String tokenValue = StpUtil.getTokenValue();
-        StpUtil.logoutByTokenValue(
-            tokenValue,
-            new SaLogoutParameter()
-                .setIsKeepTokenSession(false)
-                .setIsKeepFreezeOps(false)
-                .setMode(SaLogoutMode.LOGOUT)
-        );
+//        StpUtil.logout(new SaLogoutParameter()
+//                .setIsKeepTokenSession(false)
+//                .setIsKeepFreezeOps(false)
+//                .setMode(SaLogoutMode.LOGOUT)
+//        );
         return Rs.ok();
     }
 

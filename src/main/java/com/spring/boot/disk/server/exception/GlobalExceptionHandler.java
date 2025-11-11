@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NotLoginException.class)
     public Rs handleNotLoginException(NotLoginException ex, HttpServletRequest request) {
         log.error("授权异常【{}】, uri:{}", ex.getMessage(), request.getRequestURI(), ex);
-        return Rs.fail("auth fail").code(HttpStatus.FORBIDDEN.value());
+        return Rs.fail("auth fail").code(HttpStatus.UNAUTHORIZED.value());
     }
 
     /**

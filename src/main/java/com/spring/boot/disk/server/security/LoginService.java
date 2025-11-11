@@ -42,15 +42,15 @@ public class LoginService {
             throw new AppException("login type not support!!!");
         }
         if (Objects.isNull(vmDiskUser)) {
-            throw new AppException("账号密码不正确", HttpStatus.FORBIDDEN.value());
+            throw new AppException("账号密码不正确");
         }
         if (!Objects.equals(vmDiskUser.getAcStatus(), UserStatus.OK.getStatus())) {
-            throw new AppException("账号异常", HttpStatus.FORBIDDEN.value());
+            throw new AppException("账号异常");
         }
 //        String gensalt = BCrypt.gensalt(diskServerConfig.getPwdsalt());
 //        String pw_hash = BCrypt.hashpw(authModel.getPassword(), gensalt);
         if (!BCrypt.checkpw(authModel.getPassword(), vmDiskUser.getPassword())) {
-            throw new AppException("账号或密码不正确", HttpStatus.FORBIDDEN.value());
+            throw new AppException("账号或密码不正确");
         }
 
         SaTokenConfig tokenConfig = StpUtil.getStpLogic().getConfigOrGlobal();
