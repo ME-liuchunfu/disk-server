@@ -1,5 +1,6 @@
 package com.spring.boot.disk.server.exception;
 
+import cn.dev33.satoken.exception.NotLoginException;
 import com.spring.boot.disk.server.model.Rs;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,12 @@ public class GlobalExceptionHandler {
     public Rs handleBusinessException(AppException ex, HttpServletRequest request) {
         log.error("业务异常【{}】, uri:{}", ex.getMessage(), request.getRequestURI(), ex);
         return Rs.fail(ex.getMessage()).code(ex.getStatus());
+    }
+
+    @ExceptionHandler(NotLoginException.class)
+    public Rs handleNotLoginException(NotLoginException ex, HttpServletRequest request) {
+        log.error("授权异常【{}】, uri:{}", ex.getMessage(), request.getRequestURI(), ex);
+        return Rs.fail("auth fail").code(HttpStatus.FORBIDDEN.value());
     }
 
     /**
