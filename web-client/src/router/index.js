@@ -2,18 +2,36 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 // 导入页面组件
+import LoginView from '@/views/LoginView.vue'  // 登录页
 import DiskView from '@/views/DiskView.vue'  // 我的文件（默认页面）
 import SharedView from '@/views/SharedView.vue'  // 共享文件
 // import RecycleView from '../views/RecycleView.vue'  // 回收站
 // import FavoritesView from '../views/FavoritesView.vue'  // 收藏夹
 // import SettingsView from '../views/SettingsView.vue'  // 设置页面、
 
+// 路由守卫：验证登录状态
+const requireAuth = (to, from, next) => {
+    const isLogin = localStorage.getItem('isLogin') === 'true'
+    if (isLogin) {
+        next()  // 已登录，放行
+    } else {
+        next('/login')  // 未登录，跳转到登录页
+    }
+}
+
 // 路由规则
 const routes = [
     {
         path: '/',
-        name: 'Home',
-        redirect: '/disk'  // 默认跳转到"我的文件"页面
+        redirect: '/login'  // 默认路由指向登录页
+    },
+    {
+        path: '/login',
+        name: 'Login',
+        component: LoginView,
+        meta: {
+            title: '登录'
+        }
     },
     {
         path: '/disk',
@@ -68,6 +86,12 @@ const routes = [
         meta: { title: '页面不存在' }
     }
 ]
+
+routes.forEach(item=>{
+   if (!(item.path === '/' || item.path === '/login')) {
+       item['beforeEnter'] = requireAuth
+   }
+});
 
 // 创建路由实例
 const router = createRouter({

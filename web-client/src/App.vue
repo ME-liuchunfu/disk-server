@@ -3,7 +3,7 @@
   <div id="app">
     <div class="app-container">
       <!-- 侧边栏 -->
-      <aside class="sidebar">
+      <aside v-if="isLogin"  class="sidebar">
         <div class="sidebar-logo">
           <el-icon><Cloud /></el-icon>
           <span>云网盘</span>
@@ -24,9 +24,20 @@
           </el-menu-item>
         </el-menu>
       </aside>
-
       <!-- 主内容区 -->
       <main class="main-content">
+        <section v-if="isLogin">
+          <!-- 登出按钮 -->
+          <div class="logout-btn">
+            <el-button
+                type="danger"
+                size="small"
+                @click="handleLogout"
+            >
+              <el-icon><Logout /></el-icon> 退出登录
+            </el-button>
+          </div>
+        </section>
         <router-view />
       </main>
     </div>
@@ -34,13 +45,35 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 // 直接导入需要的图标（确保名称正确）
-import { Cloud, HardDrive, Share, Star } from '@element-plus/icons-vue'
+import { ref, watch } from 'vue'
+import { Cloud, HardDrive, Share, Star, Logout } from '@element-plus/icons-vue'
+import {ElMessage} from "element-plus";
+// import Cookies from "js-cookie";
 
+// 登录状态：从localStorage读取
+const isLogin = ref(localStorage.getItem('isLogin') === 'true')
 const router = useRouter()
+const route = useRoute()
+
+// 监听路由变化，更新登录状态
+watch(
+    () => route.path,
+    () => {
+      // console.log(newPath, oldPath)
+      isLogin.value = localStorage.getItem('isLogin') === 'true'
+    }
+)
+
 const handleMenuSelect = (path) => {
   router.push(path)
+}
+
+const handleLogout = async () => {
+  localStorage.clear();
+  router.push('/login')
+  ElMessage.success('已退出登录')
 }
 </script>
 
