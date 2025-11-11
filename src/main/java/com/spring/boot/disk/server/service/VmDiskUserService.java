@@ -6,4 +6,6 @@ import com.spring.boot.disk.server.entity.po.VmDiskUser;
 
 public interface VmDiskUserService extends IService<VmDiskUser> {
 
+    VmDiskUser selectByUserName(String userName);
+
 }

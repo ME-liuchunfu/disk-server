@@ -20,6 +20,8 @@ public class DiskServerConfig {
 
     private boolean formEnv;
 
+    private int pwdsalt;
+
     public String dirPath() {
         if (isFormEnv()) {
             String envPath = System.getenv("savePath");

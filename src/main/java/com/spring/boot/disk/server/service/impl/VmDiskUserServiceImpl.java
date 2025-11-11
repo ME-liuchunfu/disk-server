@@ -1,5 +1,7 @@
 package com.spring.boot.disk.server.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.spring.boot.disk.server.entity.po.VmDiskUser;
 import com.spring.boot.disk.server.mapper.VmDiskUserMapper;
@@ -15,5 +17,12 @@ public class VmDiskUserServiceImpl extends ServiceImpl<VmDiskUserMapper, VmDiskU
 
     @Resource
     VmDiskUserMapper vmDiskUserMapper;
+
+    @Override
+    public VmDiskUser selectByUserName(String userName) {
+        LambdaQueryWrapper<VmDiskUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(VmDiskUser::getUserName, userName);
+        return this.getOne(queryWrapper, false);
+    }
 
 }

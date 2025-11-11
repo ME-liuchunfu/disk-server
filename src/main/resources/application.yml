@@ -3,6 +3,7 @@ disk:
   server:
     save-path: E://temp/disk
     form-env: true
+    pwdsalt: 10
 
 server:
   port: 8082

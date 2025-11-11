@@ -78,6 +78,11 @@
       <scope>test</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
+
     <!-- Sa-Token 权限认证，在线文档：https://sa-token.cc -->
     <dependency>
       <groupId>cn.dev33</groupId>
