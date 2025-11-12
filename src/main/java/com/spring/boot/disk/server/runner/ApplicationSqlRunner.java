@@ -47,6 +47,7 @@ public class ApplicationSqlRunner implements ApplicationRunner {
                 "  `file_size` bigint unsigned NOT NULL DEFAULT '0' COMMENT '文件大小',\n" +
                 "  `file_type` varchar(20) NOT NULL DEFAULT 'txt' COMMENT '文件类型',\n" +
                 "  `path` varchar(3000) DEFAULT NULL COMMENT '路径',\n" +
+                "  `pref_view_path` varchar(3000) DEFAULT NULL COMMENT '预览路径',\n" +
                 "  `owner` varchar(64) DEFAULT NULL COMMENT '所有者',\n" +
                 "  `create_time` datetime DEFAULT NULL COMMENT '创建时间',\n" +
                 "  PRIMARY KEY (`id`),\n" +

@@ -33,6 +33,8 @@ public class VmDiskFile {
 
     private String path;
 
+    private String prefViewPath;
+
     private String owner;
 
     private java.util.Date createTime;

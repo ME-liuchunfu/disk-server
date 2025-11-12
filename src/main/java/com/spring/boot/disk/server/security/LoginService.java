@@ -1,9 +1,12 @@
 package com.spring.boot.disk.server.security;
 
 import cn.dev33.satoken.config.SaTokenConfig;
+import cn.dev33.satoken.exception.ApiDisabledException;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.stp.parameter.SaLoginParameter;
+import cn.dev33.satoken.stp.parameter.SaLogoutParameter;
+import cn.dev33.satoken.stp.parameter.enums.SaLogoutMode;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.BCrypt;
 import com.spring.boot.disk.server.conf.DiskServerConfig;
@@ -56,7 +59,7 @@ public class LoginService {
         SaTokenConfig tokenConfig = StpUtil.getStpLogic().getConfigOrGlobal();
         SaLoginParameter saLoginParameter = new SaLoginParameter(tokenConfig);
         saLoginParameter.setDeviceType(LoginDriverType.PC.getDriver());
-        saLoginParameter.setExtra(LoginSession.LOGIN_USER.getKey(), new LoginInfo(vmDiskUser));
+        SecurityContext.setLoginInfo(saLoginParameter, new LoginInfo(vmDiskUser));
         StpUtil.login(vmDiskUser.getUserId(), saLoginParameter);
 
         LoginResponse response = new LoginResponse();
@@ -83,6 +86,20 @@ public class LoginService {
         vmDiskUser.setEmail(registerModel.getEmail());
         vmDiskUser.setCreateTime(new Date());
         vmDiskUserService.save(vmDiskUser);
+    }
+
+    public void logout() {
+        try {
+            StpUtil.logout(new SaLogoutParameter()
+                .setIsKeepTokenSession(false)
+                .setIsKeepFreezeOps(false)
+                .setMode(SaLogoutMode.LOGOUT)
+            );
+        } catch (Exception e) {
+            if (!(e instanceof ApiDisabledException)) {
+                throw new AppException("错误", e);
+            }
+        }
     }
 
 }

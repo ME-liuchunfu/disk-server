@@ -122,4 +122,11 @@ public class VmDiskFileServiceImpl extends ServiceImpl<VmDiskFileMapper, VmDiskF
         return fileRes;
     }
 
+    @Override
+    public List<VmDiskFile> selectListByIds(List<Long> fileIdList) {
+        LambdaQueryWrapper<VmDiskFile> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(VmDiskFile::getId, fileIdList);
+        return this.list(queryWrapper);
+    }
+
 }

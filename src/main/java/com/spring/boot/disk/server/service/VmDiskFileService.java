@@ -20,4 +20,6 @@ public interface VmDiskFileService extends IService<VmDiskFile> {
 
     List<FileRes> uploadFiles(MultipartFile[] files, String userName);
 
+    List<VmDiskFile> selectListByIds(List<Long> fileIdList);
+
 }

@@ -1,12 +1,5 @@
 package com.spring.boot.disk.server.controller.api;
 
-import cn.dev33.satoken.config.SaTokenConfig;
-import cn.dev33.satoken.stp.SaTokenInfo;
-import cn.dev33.satoken.stp.StpUtil;
-import cn.dev33.satoken.stp.parameter.SaLoginParameter;
-import cn.dev33.satoken.stp.parameter.SaLogoutParameter;
-import cn.dev33.satoken.stp.parameter.enums.SaLogoutMode;
-import com.spring.boot.disk.server.constant.LoginDriverType;
 import com.spring.boot.disk.server.model.Rs;
 import com.spring.boot.disk.server.model.params.AuthModel;
 import com.spring.boot.disk.server.model.params.RegisterModel;
@@ -38,11 +31,7 @@ public class ApiAuthController {
 
     @RequestMapping("/logout")
     public Rs logout() {
-//        StpUtil.logout(new SaLogoutParameter()
-//                .setIsKeepTokenSession(false)
-//                .setIsKeepFreezeOps(false)
-//                .setMode(SaLogoutMode.LOGOUT)
-//        );
+        loginService.logout();
         return Rs.ok();
     }
 
