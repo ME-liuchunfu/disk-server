@@ -51,38 +51,11 @@ const routes = [
             icon: 'Share'
         }
     },
-    // {
-    //     path: '/favorites',
-    //     name: 'Favorites',
-    //     component: FavoritesView,
-    //     meta: {
-    //         title: '收藏夹',
-    //         icon: 'Star'
-    //     }
-    // },
-    // {
-    //     path: '/recycle',
-    //     name: 'Recycle',
-    //     component: RecycleView,
-    //     meta: {
-    //         title: '回收站',
-    //         icon: 'Delete'
-    //     }
-    // },
-    // {
-    //     path: '/settings',
-    //     name: 'Settings',
-    //     component: SettingsView,
-    //     meta: {
-    //         title: '设置',
-    //         icon: 'Setting'
-    //     }
-    // },
     // 404页面
     {
         path: '/:pathMatch(.*)*',
         name: 'NotFound',
-        component: () => import('../views/NotFound.vue'),
+        component: () => import('@/views/NotFound.vue'),
         meta: { title: '页面不存在' }
     }
 ]
