@@ -2,6 +2,15 @@ import axios from 'axios'
 import { ElMessage, ElLoading } from 'element-plus'
 import router from '@/router'
 
+// import JSONbig from 'json-bigint';
+//
+// // 创建自定义 JSON 解析器，将大整数转为字符串（或 BigInt）
+// const jsonParser = JSONbig({
+//     storeAsString: true, // 关键配置：将大整数转为字符串（避免 BigInt 类型在部分场景下的兼容性问题）
+//     // 若需要使用 BigInt 类型，可改为：storeAsBigInt: true
+// });
+
+
 console.log('当前环境：', process.env.NODE_ENV)
 console.log('API基础路径：', process.env.VUE_APP_BASE_API)
 
@@ -11,7 +20,20 @@ const service = axios.create({
     timeout: 5000, // 超时时间
     headers: {
         'Content-Type': 'application/json;charset=utf-8'
-    }
+    },
+    // 自定义响应转换
+    // transformResponse: [function (data) {
+    //     if (typeof data === 'string') {
+    //         try {
+    //             // 使用自定义解析器替代默认的 JSON.parse
+    //             return jsonParser.parse(data);
+    //         } catch (e) {
+    //             console.error('JSON 解析失败:', e);
+    //             return data;
+    //         }
+    //     }
+    //     return data;
+    // }]
 })
 
 // 加载动画实例

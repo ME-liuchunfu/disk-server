@@ -1,14 +1,14 @@
 package com.spring.boot.disk.server.controller.api;
 
+import com.alibaba.fastjson2.JSON;
 import com.spring.boot.disk.server.model.FileRes;
 import com.spring.boot.disk.server.model.Rs;
+import com.spring.boot.disk.server.model.params.OuterDownModel;
 import com.spring.boot.disk.server.security.SecurityContext;
 import com.spring.boot.disk.server.service.VmDiskFileService;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
@@ -28,6 +28,12 @@ public class FileUploadController {
     @PostMapping("/uploadMultiple")
     public Rs uploadMultipleFiles(@RequestParam("files") MultipartFile[] files) {
         List<FileRes> fileRes = vmDiskFileService.uploadFiles(files, SecurityContext.getUserName());
+        return Rs.ok().data(fileRes);
+    }
+
+    @PostMapping("/outerDown")
+    public Rs outerDown(@Validated @RequestBody OuterDownModel outerModel) {
+        List<FileRes> fileRes = vmDiskFileService.outerDown(outerModel, SecurityContext.getUserName());
         return Rs.ok().data(fileRes);
     }
 

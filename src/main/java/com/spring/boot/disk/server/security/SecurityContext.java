@@ -36,7 +36,12 @@ public class SecurityContext {
         try {
             Object extra = StpUtil.getExtra(LoginSession.LOGIN_USER.getKey());
             if (Objects.nonNull(extra)) {
-                return (LoginInfo) extra;
+                if (extra instanceof LoginInfo) {
+                    return (LoginInfo) extra;
+                }
+                if (extra instanceof cn.hutool.json.JSONObject) {
+                    return ((cn.hutool.json.JSONObject)extra).toBean(LoginInfo.class);
+                }
             }
         } catch (Exception e) {
 

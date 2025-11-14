@@ -8,6 +8,7 @@ public class DiskServerApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DiskServerApplication.class, args);
+		System.out.println("程序启动完成");
 	}
 
 }

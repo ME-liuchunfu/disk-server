@@ -5,6 +5,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LoginView from '@/views/LoginView.vue'  // 登录页
 import DiskView from '@/views/DiskView.vue'  // 我的文件（默认页面）
 import SharedView from '@/views/SharedView.vue'  // 共享文件
+import RegisterView from '@/views/RegisterView.vue'
 // import RecycleView from '../views/RecycleView.vue'  // 回收站
 // import FavoritesView from '../views/FavoritesView.vue'  // 收藏夹
 // import SettingsView from '../views/SettingsView.vue'  // 设置页面、
@@ -34,6 +35,12 @@ const routes = [
         }
     },
     {
+        path: '/register',
+        name: 'Register',
+        component: RegisterView,
+        meta: { title: '注册' }
+    },
+    {
         path: '/disk',
         name: 'MyDisk',
         component: DiskView,
@@ -60,8 +67,17 @@ const routes = [
     }
 ]
 
+const inArrValue = (arr, value) => {
+    for (let k in arr) {
+        if (arr[k] === value) {
+            return true;
+        }
+    }
+    return false;
+}
+
 routes.forEach(item=>{
-   if (!(item.path === '/' || item.path === '/login')) {
+   if (!inArrValue(['/', '/login', '/register'], item.path)) {
        item['beforeEnter'] = requireAuth
    }
 });

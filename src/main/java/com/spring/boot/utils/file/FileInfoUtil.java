@@ -1,5 +1,6 @@
 package com.spring.boot.utils.file;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -142,6 +143,24 @@ public class FileInfoUtil {
         String idStr = IdUtil.getSnowflakeNextIdStr();
         Path resolve = basePath.resolve(format).resolve(idStr + "." + fileInfo.getFileType());
         writeLargeFile(resolve, inputs.getBytes(), BUFFER_SIZE);
+        fileInfo.setFileSize(resolve.toFile().length());
+        fileInfo.setFileName(originalFilename);
+        fileInfo.setRelativePath(resolve.toString().replace(basePath.toString(), ""));
+        if (StrUtil.isBlank(hashValue)) {
+            hashValue = calculateFileHash(resolve.toFile());
+        }
+        fileInfo.setRelativePath(fileInfo.getRelativePath().replace("\\", "/"));
+        fileInfo.setHashValue(hashValue);
+        return fileInfo;
+    }
+
+    public static FileInfo transferTo(Path basePath, File inputs, String originalFilename, String hashValue) throws Exception {
+        FileInfo fileInfo = new FileInfo();
+        fileInfo.setFileType(getFileExtension(originalFilename));
+        String format = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        String idStr = IdUtil.getSnowflakeNextIdStr();
+        Path resolve = basePath.resolve(format).resolve(idStr + "." + fileInfo.getFileType());
+        FileUtil.copy(inputs, resolve.toFile(), true);
         fileInfo.setFileSize(resolve.toFile().length());
         fileInfo.setFileName(originalFilename);
         fileInfo.setRelativePath(resolve.toString().replace(basePath.toString(), ""));

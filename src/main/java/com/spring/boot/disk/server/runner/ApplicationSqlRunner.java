@@ -53,7 +53,7 @@ public class ApplicationSqlRunner implements ApplicationRunner {
                 "  PRIMARY KEY (`id`),\n" +
                 "  UNIQUE KEY `un_index` (`hash_value`) USING BTREE,\n" +
                 "  KEY `common_index` (`stat_date`,`hash_value`,`file_name`,`file_type`) USING BTREE\n" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='文件库';";
+                ") ENGINE=InnoDB COMMENT='文件库';";
     }
 
     private String getVmDiskUserSql() {
@@ -68,7 +68,7 @@ public class ApplicationSqlRunner implements ApplicationRunner {
                 "  PRIMARY KEY (`user_id`),\n" +
                 "  UNIQUE KEY `un_index` (`user_name`) USING BTREE,\n" +
                 "  KEY `common_index` (`user_name`,`user_nick`,`password`,`ac_status`) USING BTREE\n" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户信息表';";
+                ") ENGINE=InnoDB COMMENT='用户信息表';";
     }
 
     private String getVmOperateLogSql() {
@@ -81,7 +81,7 @@ public class ApplicationSqlRunner implements ApplicationRunner {
                 "  `create_time` datetime DEFAULT NULL COMMENT '时间',\n" +
                 "  PRIMARY KEY (`id`),\n" +
                 "  KEY `common_index` (`invoke_method`,`invoke_type`,`owner`) USING BTREE\n" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='操作表';";
+                ") ENGINE=InnoDB COMMENT='操作表';";
     }
 
     private String getVmUserFileSql() {
@@ -96,6 +96,6 @@ public class ApplicationSqlRunner implements ApplicationRunner {
                 "  PRIMARY KEY (`id`),\n" +
                 "  UNIQUE KEY `un_index` (`parent_id`,`title`,`owner`) USING BTREE,\n" +
                 "  KEY `common_index` (`title`,`ref_file_id`,`folder`,`owner`) USING BTREE\n" +
-                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='文件项';";
+                ") ENGINE=InnoDB COMMENT='文件项';";
     }
 }

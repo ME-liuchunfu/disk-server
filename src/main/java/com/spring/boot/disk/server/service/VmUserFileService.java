@@ -6,6 +6,7 @@ import com.spring.boot.disk.server.model.params.DiskDirAddModel;
 import com.spring.boot.disk.server.model.params.DiskDirDelModel;
 import com.spring.boot.disk.server.model.params.DiskDirScanModel;
 import com.spring.boot.disk.server.model.params.DiskDirUpdateModel;
+import com.spring.boot.disk.server.model.resp.DirSelect;
 import com.spring.boot.disk.server.model.resp.DiskDirScanResponse;
 
 import java.util.List;
@@ -19,5 +20,7 @@ public interface VmUserFileService extends IService<VmUserFile> {
      void updateDiskItem(DiskDirUpdateModel updateModel, Long userId);
 
      void delDiskItem(DiskDirDelModel delModel, Long userId);
+
+    List<DirSelect> getDir(Long parentId, Long userId);
 
 }

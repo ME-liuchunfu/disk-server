@@ -38,16 +38,40 @@
           </el-button>
         </el-form-item>
       </el-form>
+      <div class="switch-register">
+          还没有账号？
+          <el-link type="primary" @click="$router.push('/register')">立即注册</el-link>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onActivated, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import Cookies from 'js-cookie'
 import { authAPI } from '@/api/login'
+
+// 检测本地存储的方法
+const checkLocalStorage = () => {
+    // 检查本地存储中的用户信息
+    const val = localStorage.getItem('isLogin')
+    localStorage.clear()
+    if (val) {
+        window.location.href = '/'
+    }
+};
+
+// 组件挂载时检测（页面刷新时）
+onMounted(() => {
+    checkLocalStorage();
+});
+
+// 组件被激活时检测（从其他路由跳转过来时）
+onActivated(() => {
+    checkLocalStorage();
+});
 
 // 表单状态
 const loginFormRef = ref(null)
@@ -169,5 +193,11 @@ initForm()
   width: 100%;
   padding: 12px 0;
   font-size: 16px;
+}
+.switch-register {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 14px;
+    color: #666;
 }
 </style>

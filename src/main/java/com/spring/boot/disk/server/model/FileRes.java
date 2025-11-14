@@ -1,10 +1,12 @@
 package com.spring.boot.disk.server.model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 public class FileRes {
 
     private Long refId;

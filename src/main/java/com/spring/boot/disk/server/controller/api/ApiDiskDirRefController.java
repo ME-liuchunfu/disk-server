@@ -25,6 +25,12 @@ public class ApiDiskDirRefController {
         return Rs.ok().data(vmUserFileService.scanner(diskDirScanModel, userId));
     }
 
+    @PostMapping("/getDir/{parentId}")
+    public Rs getDir(@PathVariable Long parentId) {
+        Long userId = SecurityContext.getUserId();
+        return Rs.ok().data(vmUserFileService.getDir(parentId, userId));
+    }
+
     @PostMapping("/add")
     public Rs add(@Validated @RequestBody DiskDirAddModel addModel) {
         Long userId = SecurityContext.getUserId();

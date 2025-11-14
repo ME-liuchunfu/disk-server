@@ -9,6 +9,7 @@ public enum OperateLogType {
 
     UPLOAD_FILE("10001001", "单文件上传"),
     UPLOAD_FILE_MUl("10001002", "多文件上传"),
+    OUTER_FILE_DOWN("10001003", "站外文件下载"),
 
     ;
 

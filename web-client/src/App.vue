@@ -47,13 +47,13 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 // 直接导入需要的图标（确保名称正确）
-import { ref, watch } from 'vue'
+import { watch, ref } from 'vue'
 import { Cloud, HardDrive, Share, Star, Logout } from '@element-plus/icons-vue'
 import {ElMessage} from "element-plus";
 // import Cookies from "js-cookie";
 
 // 登录状态：从localStorage读取
-const isLogin = ref(localStorage.getItem('isLogin') === 'true')
+const isLogin = ref(false)
 const router = useRouter()
 const route = useRoute()
 
@@ -63,7 +63,8 @@ watch(
     () => {
       // console.log(newPath, oldPath)
       isLogin.value = localStorage.getItem('isLogin') === 'true'
-    }
+    },
+    { immediate: true }
 )
 
 const handleMenuSelect = (path) => {
@@ -82,7 +83,7 @@ const handleLogout = async () => {
 #app {
   font-family: 'Segoe UI', sans-serif;
   height: 100vh;
-  overflow: hidden;
+  overflow-y: hidden;
 }
 .app-container {
   display: flex;
@@ -114,9 +115,6 @@ const handleLogout = async () => {
   padding-left: 30px !important;
 }
 .main-content {
-  flex: 1;
-  overflow-y: auto;
-  background-color: #f5f7fa;
-  padding: 20px;
+    flex: 1;
 }
 </style>

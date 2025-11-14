@@ -15,6 +15,7 @@ import com.spring.boot.disk.server.model.params.DiskDirAddModel;
 import com.spring.boot.disk.server.model.params.DiskDirDelModel;
 import com.spring.boot.disk.server.model.params.DiskDirScanModel;
 import com.spring.boot.disk.server.model.params.DiskDirUpdateModel;
+import com.spring.boot.disk.server.model.resp.DirSelect;
 import com.spring.boot.disk.server.model.resp.DiskDirScanResponse;
 import com.spring.boot.disk.server.model.resp.DiskFileInfo;
 import com.spring.boot.disk.server.service.VmDiskFileService;
@@ -68,7 +69,7 @@ public class VmUserFileServiceImpl extends ServiceImpl<VmUserFileMapper, VmUserF
 
             Map<Long, DiskFileInfo> fileMap = diskFileList.stream()
                     .map(ConvertFactory.INST::toDiskFileInfo)
-                    .collect(Collectors.toMap(DiskFileInfo::getFileId, Function.identity(), (l, r) -> l));
+                    .collect(Collectors.toMap(DiskFileInfo::getId, Function.identity(), (l, r) -> l));
 
             for (DiskDirScanResponse response : responseList) {
                 response.setDiskFileInfo(fileMap.get(response.getRefFileId()));
@@ -106,6 +107,7 @@ public class VmUserFileServiceImpl extends ServiceImpl<VmUserFileMapper, VmUserF
         vmUserFile.setCreateTime(new Date());
         vmUserFile.setOwner(userId);
         this.save(vmUserFile);
+        // 这里要开启一个线程处理文件下载
     }
 
     @Override
@@ -167,6 +169,27 @@ public class VmUserFileServiceImpl extends ServiceImpl<VmUserFileMapper, VmUserF
         LambdaQueryWrapper<VmUserFile> delWrapper = new LambdaQueryWrapper<>();
         delWrapper.in(VmUserFile::getId, delIdsSet);
         this.remove(delWrapper);
+    }
+
+    @Override
+    public List<DirSelect> getDir(Long parentId, Long userId) {
+        LambdaQueryWrapper<VmUserFile> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(VmUserFile::getOwner, userId)
+                .eq(VmUserFile::getFolder, DiskIItemType.FOLDER.getCode());
+        if (Objects.isNull(parentId) || parentId == 0) {
+            queryWrapper.isNull(VmUserFile::getParentId);
+        } else {
+            queryWrapper.eq(VmUserFile::getParentId, parentId);
+        }
+        List<VmUserFile> list = this.list(queryWrapper);
+        ArrayList<DirSelect> dirSelects = new ArrayList<>();
+        for (VmUserFile userFile : list) {
+            DirSelect dirSelect = new DirSelect();
+            dirSelect.setId(userFile.getId());
+            dirSelect.setName(userFile.getTitle());
+            dirSelects.add(dirSelect);
+        }
+        return dirSelects;
     }
 
 }

@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class DiskFileInfo {
 
-    private Long fileId;
+    private Long id;
 
     private String fileName;
 

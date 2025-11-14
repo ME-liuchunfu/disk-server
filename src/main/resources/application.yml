@@ -4,6 +4,9 @@ disk:
     save-path: E://temp/disk
     form-env: true
     pwdsalt: 10
+  spider-server:
+    url: http://10.10.32.99:5001
+    show-video: /api/v1/short-video/video/share/url/parse?url=
 
 server:
   port: 8082
@@ -11,7 +14,9 @@ server:
 spring:
   application:
     name: disk-server
-
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8  # 设置时区，避免时间偏移
   servlet:
     multipart:
       location: ${java.io.tmpdir}
