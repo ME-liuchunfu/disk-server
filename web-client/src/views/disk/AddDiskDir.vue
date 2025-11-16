@@ -46,14 +46,15 @@
                     </template>
                 </el-input>
                 <any-upload v-else class="upload-area" @success="handlerUploadSuccess" />
-                <div v-show="outerData.show">
-                    <el-checkbox v-for="(item, index) in outerData.data"
-                                 :key="index"
-                                 v-model="item.ck"
-                                 :label="item.originalFilename"
-                                 size="large"
-                    />
-                </div>
+
+            </el-form-item>
+            <el-form-item v-show="outerData.show">
+                <el-checkbox v-for="(item, index) in outerData.data"
+                             :key="index"
+                             v-model="item.ck"
+                             :label="item.originalFilename"
+                             size="large"
+                />
             </el-form-item>
 
             <!-- 父级文件夹选择（带搜索） -->
@@ -141,7 +142,7 @@ const handlerOuter = async () => {
   }
   try {
       loadingStore.show();
-      const resp = await diskAPI.outerDown(folderForm.outer);
+      const resp = await diskAPI.outerDown([folderForm.outer]);
       console.log(resp);
       if (resp) {
           for (let respKey in resp) {
@@ -151,6 +152,7 @@ const handlerOuter = async () => {
       outerData.value.data = resp || [];
       if (outerData.value.data.length > 0) {
           folderForm.name = outerData.value.data[0]['originalFilename']
+          outerData.value.show = true;
       }
   } catch (e) {
       console.log(e)

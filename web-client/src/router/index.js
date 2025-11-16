@@ -13,7 +13,7 @@ import RegisterView from '@/views/RegisterView.vue'
 // 路由守卫：验证登录状态
 const requireAuth = (to, from, next) => {
     const isLogin = localStorage.getItem('isLogin') === 'true'
-    if (isLogin) {
+    if (isLogin || to.meta['ignore']) {
         next()  // 已登录，放行
     } else {
         next('/login')  // 未登录，跳转到登录页

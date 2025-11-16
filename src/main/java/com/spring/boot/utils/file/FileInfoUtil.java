@@ -154,9 +154,9 @@ public class FileInfoUtil {
         return fileInfo;
     }
 
-    public static FileInfo transferTo(Path basePath, File inputs, String originalFilename, String hashValue) throws Exception {
+    public static FileInfo transferTo(Path basePath, File inputs, String originalFilename, String hashValue, String fileType) throws Exception {
         FileInfo fileInfo = new FileInfo();
-        fileInfo.setFileType(getFileExtension(originalFilename));
+        fileInfo.setFileType(fileType);
         String format = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         String idStr = IdUtil.getSnowflakeNextIdStr();
         Path resolve = basePath.resolve(format).resolve(idStr + "." + fileInfo.getFileType());

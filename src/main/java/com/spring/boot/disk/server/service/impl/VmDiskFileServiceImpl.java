@@ -153,7 +153,7 @@ public class VmDiskFileServiceImpl extends ServiceImpl<VmDiskFileMapper, VmDiskF
 
     public static String extractUrl(String url) {
         // 与Python正则表达式等价的Java正则表达式
-        String regex = "http[s]?:\\/\\/[\\w.-]+[\\w\\/-]*[\\w.-]*\\??[\\w=&:\\-\\+%]*[/]*";
+        String regex = "http[s]?:\\/\\/[\\w.-]+[\\w\\/-]*[\\w.-]*\\??[\\w=&:\\-\\+\\%]*[/]*";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(url);
 
@@ -173,8 +173,8 @@ public class VmDiskFileServiceImpl extends ServiceImpl<VmDiskFileMapper, VmDiskF
             futures[i] = CompletableFuture.supplyAsync(()->{
                 FileRes fileRes = null;
                 try {
-                    String down = extractUrl(url);
-                    String encode = URLEncoder.encode(down, "utf-8");
+//                    String down = extractUrl(url);
+                    String encode = URLEncoder.encode(url, "utf-8");
                     String response = HttpUtil.get(serverApi + encode);
                     JSONObject jsonObject = JSON.parseObject(response);
                     JSONObject data = jsonObject.getJSONObject("data");
@@ -186,23 +186,33 @@ public class VmDiskFileServiceImpl extends ServiceImpl<VmDiskFileMapper, VmDiskF
                     String dirPath = diskServerConfig.dirPath();
                     Path path = diskServerConfig.fromDirPath(dirPath);
                     String hashValue = FileHasher.calculateFileHash(mp4tempFile, FileHasher.Algorithm.SHA256);
-                    FileInfo fileInfo = FileInfoUtil.transferTo(path, mp4tempFile, title, hashValue);
-                    fileRes = new FileRes();
-                    fileRes.setFileSize(fileInfo.getFileSize());
-                    fileRes.setOriginalFilename(fileInfo.getFileName());
-                    fileRes.setPath(fileInfo.getRelativePath());
-                    fileRes.setHashValue(fileInfo.getHashValue());
+                    VmDiskFile vmDiskFile = this.selectByHashValue(hashValue);
+                    if (Objects.isNull(vmDiskFile)) {
+                        FileInfo fileInfo = FileInfoUtil.transferTo(path, mp4tempFile, title, hashValue, "mp4");
+                        fileRes = new FileRes();
+                        fileRes.setFileSize(fileInfo.getFileSize());
+                        fileRes.setOriginalFilename(fileInfo.getFileName());
+                        fileRes.setPath(fileInfo.getRelativePath());
+                        fileRes.setHashValue(fileInfo.getHashValue());
+                        // 写入
+                        vmDiskFile = new VmDiskFile();
+                        vmDiskFile.setFileSize(fileInfo.getFileSize());
+                        vmDiskFile.setFileName(fileInfo.getFileName());
+                        vmDiskFile.setPath(fileInfo.getRelativePath());
+                        vmDiskFile.setHashValue(fileInfo.getHashValue());
+                        vmDiskFile.setFileType(fileInfo.getFileType());
+                        vmDiskFile.setOwner(userName);
+                        this.insert(vmDiskFile);
+                        fileRes.setRefId(vmDiskFile.getId());
+                    } else {
+                        fileRes = new FileRes();
+                        fileRes.setFileSize(vmDiskFile.getFileSize());
+                        fileRes.setOriginalFilename(vmDiskFile.getFileName());
+                        fileRes.setPath(vmDiskFile.getPath());
+                        fileRes.setHashValue(vmDiskFile.getHashValue());
+                        fileRes.setRefId(vmDiskFile.getId());
+                    }
 
-                    // 写入
-                    VmDiskFile vmDiskFile = new VmDiskFile();
-                    vmDiskFile.setFileSize(fileInfo.getFileSize());
-                    vmDiskFile.setFileName(fileInfo.getFileName());
-                    vmDiskFile.setPath(fileInfo.getRelativePath());
-                    vmDiskFile.setHashValue(fileInfo.getHashValue());
-                    vmDiskFile.setFileType(fileInfo.getFileType());
-                    vmDiskFile.setOwner(userName);
-                    this.insert(vmDiskFile);
-                    fileRes.setRefId(vmDiskFile.getId());
                     OperateLogTask.getIns().logOperate(CountStr.concat(this.getClass(), "outerDown"), jsonObject.toJSONString(), OperateLogType.OUTER_FILE_DOWN, userName);
 
 //                    File imgtempFile = File.createTempFile(UUID.fastUUID().toString(), ".png");
