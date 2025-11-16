@@ -27,16 +27,7 @@
       <!-- 主内容区 -->
       <main class="main-content">
         <section v-if="isLogin">
-          <!-- 登出按钮 -->
-          <div class="logout-btn">
-            <el-button
-                type="danger"
-                size="small"
-                @click="handleLogout"
-            >
-              <el-icon><Logout /></el-icon> 退出登录
-            </el-button>
-          </div>
+          <top-nav />
         </section>
         <router-view />
       </main>
@@ -48,9 +39,10 @@
 import { useRoute, useRouter } from 'vue-router'
 // 直接导入需要的图标（确保名称正确）
 import { watch, ref } from 'vue'
-import { Cloud, HardDrive, Share, Star, Logout } from '@element-plus/icons-vue'
-import {ElMessage} from "element-plus";
+import { Cloud, HardDrive, Share, Star } from '@element-plus/icons-vue'
+// import {ElMessage} from "element-plus";
 // import Cookies from "js-cookie";
+import TopNav from "@/views/layout/TopNav.vue";
 
 // 登录状态：从localStorage读取
 const isLogin = ref(false)
@@ -71,11 +63,6 @@ const handleMenuSelect = (path) => {
   router.push(path)
 }
 
-const handleLogout = async () => {
-  localStorage.clear();
-  router.push('/login')
-  ElMessage.success('已退出登录')
-}
 </script>
 
 <style scoped>
