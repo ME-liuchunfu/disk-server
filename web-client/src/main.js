@@ -9,6 +9,7 @@ import router from '@/router'  // 引入路由
 import * as ElementPlusIconsVue from '@element-plus/icons-vue' // 导入所有图标
 import 'normalize.css'
 import '@/assets/css/base.css'
+import '@/assets/css/scrollbar.css'
 import { createPinia } from 'pinia'
 
 const app = createApp(App);

@@ -1,0 +1,40 @@
+/* 自定义滚动条样式 */
+/* 滚动条轨道 */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+/* 滚动条轨道背景 */
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 8px;
+}
+
+/* 滚动条滑块 */
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+}
+
+/* 滚动条滑块悬停状态 */
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* 滚动条滑块激活状态 */
+::-webkit-scrollbar-thumb:active {
+    background: #8d8d8d;
+}
+
+/* 为Vue组件添加过渡效果 */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #c1c1c1 #f1f1f1;
+}
+
+/* 解决某些元素可能覆盖滚动条的问题 */
+*::-webkit-scrollbar {
+    z-index: 9999;
+}

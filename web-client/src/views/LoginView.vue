@@ -52,6 +52,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import Cookies from 'js-cookie'
 import { authAPI } from '@/api/login'
+import eventBus from '@/utils/eventBus'
 
 // 检测本地存储的方法
 const checkLocalStorage = () => {
@@ -136,6 +137,7 @@ const handleLogin = async () => {
       localStorage.setItem('tokenName', res['tokenName']);
       localStorage.setItem('tokenValue', res['tokenValue']);
 
+      eventBus.emit('data-event', {type: 'isLogin', value: true})
       router.push('/disk')
       ElMessage.success('登录成功')
     } else {

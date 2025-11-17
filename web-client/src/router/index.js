@@ -6,9 +6,7 @@ import LoginView from '@/views/LoginView.vue'  // 登录页
 import DiskView from '@/views/DiskView.vue'  // 我的文件（默认页面）
 import SharedView from '@/views/SharedView.vue'  // 共享文件
 import RegisterView from '@/views/RegisterView.vue'
-// import RecycleView from '../views/RecycleView.vue'  // 回收站
-// import FavoritesView from '../views/FavoritesView.vue'  // 收藏夹
-// import SettingsView from '../views/SettingsView.vue'  // 设置页面、
+import NotFound from "@/views/NotFound.vue";
 
 // 路由守卫：验证登录状态
 const requireAuth = (to, from, next) => {
@@ -24,7 +22,7 @@ const requireAuth = (to, from, next) => {
 const routes = [
     {
         path: '/',
-        redirect: '/login'  // 默认路由指向登录页
+        redirect: '/disk'
     },
     {
         path: '/login',
@@ -57,15 +55,15 @@ const routes = [
             title: '共享文件',
             icon: 'Share'
         }
-    },
-    // 404页面
-    {
-        path: '/:pathMatch(.*)*',
-        name: 'NotFound',
-        component: () => import('@/views/NotFound.vue'),
-        meta: { title: '页面不存在' }
     }
 ]
+
+routes.push({
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: NotFound,
+    meta: { title: '页面不存在' }
+})
 
 const inArrValue = (arr, value) => {
     for (let k in arr) {

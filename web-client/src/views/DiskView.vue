@@ -62,7 +62,7 @@
                             <component :is="getFileIcon(getFileType(file))"></component>
                         </el-icon>
                     </div>
-                    <el-tooltip :content="file.title" placement="top" effect="light">
+                    <el-tooltip :content="file.title" placement="right" effect="light">
                         <div class="file-name">
                             {{ file.title }}
                         </div>
@@ -371,6 +371,8 @@ onMounted(() => {
     margin: 0 auto;
     padding: 20px;
     min-height: 0;
+    display: flex;
+    flex-direction: column;
 }
 
 .disk-header {
@@ -403,8 +405,8 @@ onMounted(() => {
     margin-bottom: 15px;
 }
 .dir-el-container {
-    position: absolute;
     height: calc(100vh - 170px);
+    width: 100%;
 }
 
 .file-grid::-webkit-scrollbar {

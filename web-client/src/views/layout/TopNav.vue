@@ -1,8 +1,8 @@
 <template>
-  <div class="top-nav">
+  <div class="top-nav" v-show="isLogin">
     <!-- 左侧logo和标题 -->
     <div class="nav-left">
-      <el-icon class="nav-logo"><Cloud /></el-icon>
+      <span class="nav-operation" @click="handleNavOperation"><el-icon class="nav-logo"><Operation /></el-icon></span>
       <span class="nav-title">云网盘</span>
     </div>
 
@@ -62,13 +62,14 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import {ref, computed, onMounted, onUnmounted} from 'vue'
 import { useRouter } from 'vue-router'
 import {
-  Cloud, ChevronDown,
-  User, Setting, Logout
+   ChevronDown,
+  User, Setting, Logout, Operation
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
+import eventBus from '@/utils/eventBus'
 
 // 状态管理
 const searchText = ref('')
@@ -78,6 +79,7 @@ const userInfo = ref({
   avatar: '',
   username: ''
 })
+const isLogin = ref(localStorage.getItem('isLogin') === 'true')
 
 // 路由实例
 const router = useRouter()
@@ -90,6 +92,18 @@ const userInitial = computed(() => {
 // 快捷访问用户信息
 const userName = computed(() => userInfo.value.name || userInfo.value.username)
 const userAvatar = computed(() => userInfo.value.avatar)
+
+const handleNavOperation = () => {
+    const miniNavValue = localStorage.getItem('miniNav')
+    let value = false;
+    if (miniNavValue) {
+        localStorage.removeItem('miniNav')
+    } else {
+        value = true;
+        localStorage.setItem('miniNav', "true")
+    }
+    eventBus.emit('data-event', {type: 'miniNav', value: value})
+}
 
 // 切换用户下拉菜单
 const toggleUserMenu = () => {
@@ -149,12 +163,23 @@ const fetchUserInfo = async () => {
   }
 }
 
+const handleReceivedData = (data) => {
+    if (data && data['type']) {
+        const type = data['type']
+        const value = data['value']
+        if (type === 'isLogin') {
+            isLogin.value = value
+        }
+    }
+}
+
 // 初始化
 onMounted(() => {
   // 获取用户信息
-  if (localStorage.getItem('isLogin') === 'true') {
+  if (isLogin.value) {
     fetchUserInfo()
   }
+  eventBus.on('data-event', handleReceivedData)
   // 监听点击事件关闭下拉菜单
   document.addEventListener('click', closeUserMenu)
 })
@@ -162,6 +187,7 @@ onMounted(() => {
 // 清理事件监听
 onUnmounted(() => {
   document.removeEventListener('click', closeUserMenu)
+  eventBus.off('data-event', handleReceivedData)
 })
 </script>
 
@@ -185,6 +211,9 @@ onUnmounted(() => {
   gap: 10px;
 }
 
+.nav-operation {
+    cursor: pointer;
+}
 .nav-logo {
   color: #409eff;
   font-size: 24px;
