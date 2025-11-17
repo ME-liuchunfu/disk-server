@@ -15,5 +15,7 @@ export const diskAPI = {
     // 新增
     add: (data) => request.post('/api/disk/dir/ref/manager/add', data),
     update: (data) => request.post('/api/disk/dir/ref/manager/update', data),
-    del: (data) => request.post('/api/disk/dir/ref/manager/del', data),
+    del: (data) => request.post('/api/disk/dir/ref/manager/del', data, {
+        timeout: 60 * 1000
+    }),
 }

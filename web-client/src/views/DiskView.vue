@@ -14,10 +14,6 @@
                 </el-button>
             </div>
         </div>
-
-        <!-- 上传区域 -->
-<!--        <file-uploader @upload-complete="refreshFileList" class="upload-area" />-->
-
         <!-- 视图切换 -->
         <div class="view-switch">
             <el-space wrap :size="20">
@@ -134,6 +130,16 @@
                        :folders="dialogs.addDir.folders"/>
         </el-dialog>
 
+        <!-- 重命名 -->
+        <el-dialog  v-model="dialogs.updateDir.show"
+                    :title="dialogs.updateDir.title"
+                    width="500px"
+        >
+          <RenameDirDialog
+              @submit="enterDirPath(null);dialogs.updateDir.show = false;"
+              @cancel="dialogs.updateDir.show = false"
+              :folder="dialogs.updateDir.folder"/>
+        </el-dialog>
         <!-- 右键菜单 -->
         <div
                 v-if="contextMenuFile"
@@ -158,13 +164,13 @@ import {
     Share,
     FolderAdd, ArrowLeftBold
 } from '@element-plus/icons-vue'
-// import FileUploader from '@/components/file/FileUploader.vue'
 import FilePreview from '@/components/file/FilePreview.vue'
 import { formatFileSize } from '@/utils/format'
 import { diskAPI } from '@/api/disk'
-import {ElMessage} from "element-plus"
+import {ElMessage, ElMessageBox} from "element-plus"
 import { useLoadingStore } from '@/stores/loading';
 import AddFolder from '@/views/disk/AddDiskDir.vue'
+import RenameDirDialog from "@/views/disk/RenameDirDialog.vue";
 
 
 // 状态管理
@@ -183,6 +189,11 @@ const dialogs = ref({
         show: false,
         title: "目录操作",
         folders: []
+    },
+    updateDir:{
+      show: false,
+      title: "重命名",
+      folder: {}
     }
 })
 
@@ -289,14 +300,34 @@ const closeContextMenu = () => {
 const handleDelete = (file) => {
     closeContextMenu()
     // 实际项目中调用删除接口
-    console.log('删除文件', file.name)
+    ElMessageBox.confirm(
+        `确定要删除 ${file.title} 及其子目录文件 ?`,
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+        }
+    )
+    .then(async () => {
+      try {
+        await diskAPI.del({ids: [file.id]})
+        ElMessage.success("删除成功")
+        enterDirPath(null);
+      } catch (error) {
+        ElMessage.error(error || "删除失败")
+      }
+    })
+    .catch(()=>{
+
+    })
 }
 
 // 处理重命名
 const handleRename = (file) => {
-    closeContextMenu()
-    // 实际项目中调用重命名接口
-    console.log('重命名文件', file.name)
+  dialogs.value.updateDir.folder = file;
+  closeContextMenu();
+  dialogs.value.updateDir.show = true;
 }
 
 const handlerClickItem = (file) => {
