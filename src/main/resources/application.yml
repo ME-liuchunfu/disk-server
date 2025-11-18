@@ -4,6 +4,8 @@ disk:
     save-path: E://temp/disk
     form-env: true
     pwdsalt: 10
+    token-expire-time: 600000
+    download-url: http://10.10.32.20:1080/files/
   spider-server:
     url: http://10.10.32.99:5001
     show-video: /api/v1/short-video/video/share/url/parse?url=

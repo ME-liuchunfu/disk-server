@@ -25,4 +25,6 @@ public interface VmDiskFileService extends IService<VmDiskFile> {
 
     List<FileRes> outerDown(OuterDownModel outerModel, String userName);
 
+    String token();
+
 }

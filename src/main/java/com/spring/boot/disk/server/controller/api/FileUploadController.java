@@ -1,6 +1,5 @@
 package com.spring.boot.disk.server.controller.api;
 
-import com.alibaba.fastjson2.JSON;
 import com.spring.boot.disk.server.model.FileRes;
 import com.spring.boot.disk.server.model.Rs;
 import com.spring.boot.disk.server.model.params.OuterDownModel;
@@ -35,6 +34,11 @@ public class FileUploadController {
     public Rs outerDown(@Validated @RequestBody OuterDownModel outerModel) {
         List<FileRes> fileRes = vmDiskFileService.outerDown(outerModel, SecurityContext.getUserName());
         return Rs.ok().data(fileRes);
+    }
+
+    @GetMapping("/token")
+    public Rs token() {
+        return Rs.ok().data(vmDiskFileService.token());
     }
 
 }

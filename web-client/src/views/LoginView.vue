@@ -13,6 +13,7 @@
               v-model="loginForm.userName"
               placeholder="请输入用户名"
               prefix-icon="User"
+              @keyup.enter="handleLogin"
           ></el-input>
         </el-form-item>
         <el-form-item prop="password">
@@ -21,6 +22,7 @@
               type="password"
               placeholder="请输入密码"
               prefix-icon="Lock"
+              @keyup.enter="handleLogin"
           ></el-input>
         </el-form-item>
         <el-form-item class="remember-item">

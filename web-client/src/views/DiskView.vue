@@ -146,7 +146,7 @@
                 class="context-menu"
                 :style="{ top: contextMenuTop + 'px', left: contextMenuLeft + 'px' }"
         >
-            <div class="menu-item" @click="handleDownload(contextMenuFile)">下载</div>
+            <div class="menu-item" v-if="contextMenuFile.folder === 0" @click="handleDownload(contextMenuFile)">下载</div>
             <div class="menu-item" @click="handleDelete(contextMenuFile)">删除</div>
             <div class="menu-item" @click="handleRename(contextMenuFile)">重命名</div>
         </div>
@@ -154,7 +154,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import {ref, onMounted, watch} from 'vue'
 import {
     Folder, Grid, Refresh,
     FolderOpened, File, Image, Video, Music,
@@ -171,6 +171,7 @@ import {ElMessage, ElMessageBox} from "element-plus"
 import { useLoadingStore } from '@/stores/loading';
 import AddFolder from '@/views/disk/AddDiskDir.vue'
 import RenameDirDialog from "@/views/disk/RenameDirDialog.vue";
+import {downloads} from "@/utils/downloads";
 
 
 // 状态管理
@@ -183,6 +184,23 @@ const contextMenuFile = ref(null)
 const contextMenuTop = ref(0)
 const contextMenuLeft = ref(0)
 const dirPathQueue = ref([])
+
+watch(
+    () => dirPathQueue.value,
+    () => {
+        localStorage.setItem("cacheQue", dirPathQueue.value)
+    },
+    // { immediate: true } // 初始化时立即执行
+)
+
+onMounted(()=>{
+    try {
+        const cacheQue = localStorage.getItem("cacheQue") || '[]'
+        dirPathQueue.value = JSON.parse(cacheQue)
+    } catch (e) {
+        console.log(e)
+    }
+})
 
 const dialogs = ref({
     addDir:{
@@ -272,13 +290,23 @@ const handlePreview = (file) => {
 }
 
 // 处理下载
-const handleDownload = (file) => {
-    const link = document.createElement('a')
-    link.href = file.url
-    link.download = file.name
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
+const handleDownload = async (file) => {
+    try {
+        if (file['folder'] !== 0 || !file['diskFileInfo']) {
+            ElMessage.warning(`不是 ${file.title} 文件，不支持下载`)
+            return
+        }
+        loadingStore.show()
+        const downUrl = await downloads.getDownTokeUrl(file['diskFileInfo']['path'])
+        let name = file.title;
+        if (name.indexOf(".") === -1) {
+            name = name + file['diskFileInfo']['fileType']
+        }
+        downloads.down(downUrl, name)
+    } catch (e) {
+        ElMessage.error(`${file.title} 文件，下载失败`)
+    }
+    loadingStore.hide()
 }
 
 // 显示右键菜单

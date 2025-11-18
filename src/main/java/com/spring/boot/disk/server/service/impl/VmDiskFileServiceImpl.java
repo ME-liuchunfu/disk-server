@@ -1,7 +1,9 @@
 package com.spring.boot.disk.server.service.impl;
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpUtil;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONObject;
@@ -239,6 +241,17 @@ public class VmDiskFileServiceImpl extends ServiceImpl<VmDiskFileMapper, VmDiskF
             log.error("下载错误", e);
         }
         return resList;
+    }
+
+    @Override
+    public String token() {
+        long expireTime = System.currentTimeMillis() + diskServerConfig.getTokenExpireTime();
+        String encode = Base64.encode(String.valueOf(expireTime));
+        String step = "";
+        if (!StrUtil.endWith(diskServerConfig.getDownloadUrl(), "/")) {
+            step = "/";
+        }
+        return String.format("%s%s%s/", diskServerConfig.getDownloadUrl(), step, encode);
     }
 
 }

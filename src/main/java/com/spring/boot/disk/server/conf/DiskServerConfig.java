@@ -22,6 +22,10 @@ public class DiskServerConfig {
 
     private int pwdsalt;
 
+    private long tokenExpireTime = 10 * 60 * 1000;
+
+    private String downloadUrl;
+
     public String dirPath() {
         if (isFormEnv()) {
             String envPath = System.getenv("savePath");
