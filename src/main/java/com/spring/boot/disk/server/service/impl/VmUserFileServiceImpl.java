@@ -145,14 +145,23 @@ public class VmUserFileServiceImpl extends ServiceImpl<VmUserFileMapper, VmUserF
     @Override
     public void delDiskItem(DiskDirDelModel delModel, Long userId) {
         HashSet<Long> delIdsSet = new HashSet<>();
-        boolean next = true;
         List<Long> queryIds = new ArrayList<>(Arrays.asList(delModel.getIds()));
-
-        do {
-            LambdaQueryWrapper<VmUserFile> queryWrapper = new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<VmUserFile> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(VmUserFile::getOwner, userId)
+                .in(VmUserFile::getId, queryIds);
+        List<VmUserFile> fileList = this.list(queryWrapper);
+        delIdsSet.addAll(fileList.stream().map(VmUserFile::getId).toList());
+        queryIds = fileList.stream()
+                .filter(v -> v.getFolder() == DiskIItemType.FOLDER.getCode())
+                .map(VmUserFile::getId)
+                .distinct()
+                .toList();
+        boolean next = !queryIds.isEmpty();
+        while (next) {
+            queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(VmUserFile::getOwner, userId)
-                    .in(VmUserFile::getId, queryIds);
-            List<VmUserFile> fileList = this.list(queryWrapper);
+                    .in(VmUserFile::getParentId, queryIds);
+            fileList = this.list(queryWrapper);
 
             delIdsSet.addAll(fileList.stream().map(VmUserFile::getId).toList());
 
@@ -164,7 +173,7 @@ public class VmUserFileServiceImpl extends ServiceImpl<VmUserFileMapper, VmUserF
             if (queryIds.isEmpty()) {
                 next = false;
             }
-        } while (next);
+        }
         // 删除
         LambdaQueryWrapper<VmUserFile> delWrapper = new LambdaQueryWrapper<>();
         delWrapper.in(VmUserFile::getId, delIdsSet);
