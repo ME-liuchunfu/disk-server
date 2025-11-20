@@ -246,7 +246,7 @@ public class VmDiskFileServiceImpl extends ServiceImpl<VmDiskFileMapper, VmDiskF
     @Override
     public String token() {
         long expireTime = System.currentTimeMillis() + diskServerConfig.getTokenExpireTime();
-        String encode = Base64.encode(String.valueOf(expireTime));
+        String encode = Base64.encodeUrlSafe(String.valueOf(expireTime));
         String step = "";
         if (!StrUtil.endWith(diskServerConfig.getDownloadUrl(), "/")) {
             step = "/";

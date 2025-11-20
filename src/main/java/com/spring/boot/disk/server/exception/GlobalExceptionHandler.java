@@ -1,6 +1,7 @@
 package com.spring.boot.disk.server.exception;
 
 import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.exception.SaTokenContextException;
 import com.spring.boot.disk.server.model.Rs;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotLoginException.class)
     public Rs handleNotLoginException(NotLoginException ex, HttpServletRequest request) {
+        log.error("授权异常【{}】, uri:{}", ex.getMessage(), request.getRequestURI(), ex);
+        return Rs.fail("auth fail").code(HttpStatus.UNAUTHORIZED.value());
+    }
+
+    @ExceptionHandler(SaTokenContextException.class)
+    public Rs handleSaTokenContextException(SaTokenContextException ex, HttpServletRequest request) {
         log.error("授权异常【{}】, uri:{}", ex.getMessage(), request.getRequestURI(), ex);
         return Rs.fail("auth fail").code(HttpStatus.UNAUTHORIZED.value());
     }

@@ -21,6 +21,8 @@
     "video.js": "^8.23.4",
     "viewerjs": "^1.11.7",
     "vue": "^3.2.13",
+    "vue-office": "^0.0.5",
+    "vue-office-pdf": "^0.0.1-beta.10",
     "vue-router": "^4.6.3"
   },
   "devDependencies": {

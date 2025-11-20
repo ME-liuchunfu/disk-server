@@ -48,5 +48,17 @@ export const downloads = {
         } catch (error) {
             console.error('下载失败：', error);
         }
-    }
+    },
+    blobData: async (url) => {
+        try {
+            // 1. 发起 fetch 请求（支持携带 Token 等请求头）
+            const response = await fetch(url);
+            // 3. 将响应转换为 Blob 对象（二进制数据）
+            const blob = await response.blob();
+            return blob;
+        } catch (error) {
+            console.error('下载失败：', error);
+        }
+        return null;
+    },
 }
