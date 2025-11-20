@@ -6,14 +6,14 @@
           size="small"
           @click="$emit('toggle-fullscreen')"
       >
-        <el-icon><Fullscreen /></el-icon> {{ isFullscreen ? '退出全屏' : '全屏' }}
+        {{ isFullscreen ? '退出全屏' : '全屏' }}
       </el-button>
     </div>
 
     <!-- 图片预览 -->
     <div v-if="fileType === 'image'" class="preview-image">
       <el-image
-          :src="file.url"
+          :src="url"
           fit="contain"
           preview-teleported
           class="preview-img"
@@ -30,7 +30,7 @@
           width="100%"
           height="auto"
       >
-        <source :src="file.url" :type="file.mimeType">
+        <source :src="url" :type="fileType">
       </video>
     </div>
 
@@ -40,8 +40,18 @@
           controls
           class="audio-player"
       >
-        <source :src="file.url" :type="file.mimeType">
+        <source :src="url" :type="fileType">
       </audio>
+    </div>
+
+    <!-- xlsx -->
+    <div v-if="'xlsx' === fileType" class="preview-audio">
+      <vue-office-docx :src="url" />
+    </div>
+
+    <!-- pdf -->
+    <div v-if="'pdf' === fileType" class="preview-audio">
+      <vue-office-pdf :src="url" />
     </div>
 
     <!-- 文本预览 -->
@@ -61,7 +71,7 @@
     <div v-if="fileType === 'other'" class="preview-unsupported">
       <el-icon class="unsupported-icon"><WarningFilled /></el-icon>
       <p>不支持预览此文件类型</p>
-      <p>文件类型: {{ file.mimeType }}</p>
+      <p>文件类型: {{ fileType }}</p>
     </div>
   </div>
 </template>
@@ -70,11 +80,10 @@
 import {
   ref,
   onMounted,
-  computed,
   defineProps,
   onUnmounted,
 } from 'vue'
-import { Fullscreen, WarningFilled } from '@element-plus/icons-vue'
+import { WarningFilled } from '@element-plus/icons-vue'
 import axios from 'axios'
 import videojs from 'video.js'
 import 'video.js/dist/video-js.css'
@@ -84,6 +93,9 @@ import javascript from 'highlight.js/lib/languages/javascript';  // 正确路径
 import html from 'highlight.js/lib/languages/htmlbars';  // 正确路径
 import css from 'highlight.js/lib/languages/css';
 import json from 'highlight.js/lib/languages/json';
+import VueOfficeDocx from 'vue-office/lib/docx'
+import VueOfficePdf from "vue-office/lib/pdf";
+// import VueOfficePdf from 'vue-office/lib/pdf'
 
 
 // 注册语言
@@ -93,13 +105,17 @@ hljs.registerLanguage('css', css)
 hljs.registerLanguage('json', json)
 
 const props = defineProps({
-  file: {
-    type: Object,
-    required: true
+  url: {
+    type: String,
+    required: true,
+    default: () => ''
+  },
+  fileType: {
+    type: String,
+    required: true,
+    default: () => ''
   }
 })
-
-//const emit = defineEmits(['toggle-fullscreen'])
 
 // 状态
 const content = ref('')
@@ -108,33 +124,20 @@ const error = ref(false)
 const videoPlayer = ref(null)
 const isFullscreen = ref(false)
 
-// 计算文件类型
-const fileType = computed(() => {
-  const mimeType = props.file.mimeType || ''
-  if (mimeType.startsWith('image/')) return 'image'
-  if (mimeType.startsWith('video/')) return 'video'
-  if (mimeType.startsWith('audio/')) return 'audio'
-  if (mimeType.startsWith('text/') ||
-      ['application/json', 'application/javascript', 'text/plain'].includes(mimeType)) {
-    return 'text'
-  }
-  return 'other'
-})
-
 // 获取文本文件语言
 const getFileLanguage = () => {
-  const name = props.file.name || ''
-  if (name.endsWith('.js')) return 'javascript'
-  if (name.endsWith('.html')) return 'html'
-  if (name.endsWith('.css')) return 'css'
-  if (name.endsWith('.json')) return 'json'
+  const name = props.fileType || ''
+  if (name.endsWith('js')) return 'javascript'
+  if (name.endsWith('html')) return 'html'
+  if (name.endsWith('css')) return 'css'
+  if (name.endsWith('json')) return 'json'
   return 'plaintext'
 }
 
 // 加载文本内容
 const loadTextContent = () => {
   loading.value = true
-  axios.get(props.file.url)
+  axios.get(props.url)
       .then(res => {
         content.value = res.data
         loading.value = false
@@ -161,9 +164,9 @@ const initVideoPlayer = () => {
 }
 
 onMounted(() => {
-  if (fileType.value === 'text') {
+  if (props.fileType.value === 'text' || props.fileType.value === 'txt') {
     loadTextContent()
-  } else if (fileType.value === 'video') {
+  } else if (props.fileType.value === 'video') {
     initVideoPlayer()
   }
 })

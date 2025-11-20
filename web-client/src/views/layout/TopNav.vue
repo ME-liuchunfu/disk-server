@@ -34,7 +34,6 @@
           <span v-if="!userAvatar" class="avatar-placeholder">{{ userInitial }}</span>
         </el-avatar>
         <span class="user-name">{{ userName }}</span>
-        <el-icon class="user-arrow" :class="{ 'rotate': userMenuVisible }"><ChevronDown /></el-icon>
 
         <!-- 下拉菜单 -->
         <div
@@ -65,7 +64,6 @@
 import {ref, computed, onMounted, onUnmounted} from 'vue'
 import { useRouter } from 'vue-router'
 import {
-   ChevronDown,
   User, Setting, Logout, Operation
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'

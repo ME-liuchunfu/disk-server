@@ -111,11 +111,14 @@
         <el-dialog
                 v-model="previewVisible"
                 :title="currentFile?.name"
-                width="85%"
+                width="100%"
+                height="100vh"
+                append-to-body
                 :fullscreen="isFullscreen"
         >
             <file-preview
-                    :file="currentFile"
+                    :file-type="previewFile.fileType"
+                    :url="previewFile.url"
                     @toggle-fullscreen="isFullscreen = !isFullscreen"
             ></file-preview>
         </el-dialog>
@@ -140,13 +143,6 @@
               @cancel="dialogs.updateDir.show = false"
               :folder="dialogs.updateDir.folder"/>
         </el-dialog>
-
-        <document-preview
-            class="document-preview"
-            :class="{'document-preview-show': dialogs.previewConfig.show}"
-            @close="callHandleClosePreview"
-            :file-type="dialogs.previewConfig.fileType"
-            :src="dialogs.previewConfig.url"/>
 
         <!-- 右键菜单 -->
         <div
@@ -180,7 +176,6 @@ import { useLoadingStore } from '@/stores/loading';
 import AddFolder from '@/views/disk/AddDiskDir.vue'
 import RenameDirDialog from "@/views/disk/RenameDirDialog.vue";
 import {downloads} from "@/utils/downloads";
-import DocumentPreview from "@/components/file/DocumentPreview.vue";
 
 
 // 状态管理
@@ -193,6 +188,11 @@ const contextMenuFile = ref(null)
 const contextMenuTop = ref(0)
 const contextMenuLeft = ref(0)
 const dirPathQueue = ref([])
+
+const previewFile = ref({
+  'url': '',
+  'fileType': ''
+})
 
 watch(
     () => dirPathQueue.value,
@@ -297,11 +297,18 @@ const formatSize = (size) => {
 }
 
 // 处理预览
-const handlePreview = (file) => {
-    currentFile.value = file
+const handlePreview = async (file) => {
+    if (!file['diskFileInfo']) {
+      ElMessage.error('文件错误');
+      return
+    }
+    const downUrl = await downloads.getDownTokeUrl(file['diskFileInfo']['path'])
+    previewFile.value.url = downUrl;
+    previewFile.value.fileType = file['diskFileInfo']['fileType'];
+    currentFile.value = file;
+
     previewVisible.value = true
     isFullscreen.value = false
-    handleHttpPreview(file);
 }
 
 // 处理下载
@@ -318,31 +325,6 @@ const handleDownload = async (file) => {
             name = name + file['diskFileInfo']['fileType']
         }
         downloads.down(downUrl, name)
-    } catch (e) {
-        ElMessage.error(`${file.title} 文件，下载失败`)
-    }
-    loadingStore.hide()
-}
-
-const callHandleClosePreview = () => {
-    dialogs.value.previewConfig.show = false;
-}
-
-const handleHttpPreview = async (file) => {
-    try {
-        if (file['folder'] !== 0 || !file['diskFileInfo']) {
-            ElMessage.warning(`不是 ${file.title} 文件，不支持预览`)
-            return
-        }
-        loadingStore.show()
-        const downUrl = await downloads.getDownTokeUrl(file['diskFileInfo']['path'])
-        dialogs.value.previewConfig.url = downUrl;
-        dialogs.value.previewConfig.fileType = file['diskFileInfo']['fileType'];
-        if (downUrl) {
-            dialogs.value.previewConfig.show = true;
-        } else {
-            ElMessage.error("文件预览错误")
-        }
     } catch (e) {
         ElMessage.error(`${file.title} 文件，下载失败`)
     }
