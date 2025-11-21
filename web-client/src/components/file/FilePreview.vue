@@ -35,13 +35,17 @@
     </div>
 
     <!-- 音频预览 -->
-    <div v-if="fileType === 'audio'" class="preview-audio">
-      <audio
-          controls
-          class="audio-player"
-      >
-        <source :src="url" :type="fileType">
-      </audio>
+    <div v-if="inArrType(fileType, ['audio', 'mp3'])" class="preview-audio">
+        <!-- 单首音频播放 -->
+        <div class="player-container">
+            <h2>单首播放模式</h2>
+            <AudioPlayer
+                    :audio-src="url"
+            audioTitle="Vue3 音频播放示例 - 测试歌曲"
+            coverSrc="@/assets/images/cover.png"
+            primaryColor="#2c3e50"
+            />
+        </div>
     </div>
 
     <!-- xlsx -->
@@ -95,6 +99,7 @@ import css from 'highlight.js/lib/languages/css';
 import json from 'highlight.js/lib/languages/json';
 import VueOfficeDocx from 'vue-office/lib/docx'
 import VueOfficePdf from "vue-office/lib/pdf";
+import AudioPlayer from "@/components/media/AudioPlayer.vue";
 // import VueOfficePdf from 'vue-office/lib/pdf'
 
 
@@ -123,6 +128,17 @@ const loading = ref(false)
 const error = ref(false)
 const videoPlayer = ref(null)
 const isFullscreen = ref(false)
+
+const inArrType = (type, arr) => {
+  if (arr) {
+      for (let k in arr) {
+          if (arr[k] && arr[k] === type) {
+              return true;
+          }
+      }
+  }
+  return false;
+}
 
 // 获取文本文件语言
 const getFileLanguage = () => {

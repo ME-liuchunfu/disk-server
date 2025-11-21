@@ -12,11 +12,11 @@ disk:
 
 
 mysql:
-  host: ${MYSQL_HOST:14.103.137.120}  # 若注释此行，会使用默认值 localhost
+  host: ${MYSQL_HOST}  # 若注释此行，会使用默认值 localhost
   port: ${MYSQL_PORT:3306}
   database: ${MYSQL_DB:disk_server}
-  username: ${MYSQL_USERNAME:ubuntu}
-  password: ${MYSQL_PASSWD:ubuntu@2025@ubuntu}
+  username: ${MYSQL_USERNAME}
+  password: ${MYSQL_PASSWD}
 
 server:
   port: 8082

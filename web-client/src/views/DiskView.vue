@@ -176,7 +176,7 @@ import { useLoadingStore } from '@/stores/loading';
 import AddFolder from '@/views/disk/AddDiskDir.vue'
 import RenameDirDialog from "@/views/disk/RenameDirDialog.vue";
 import {downloads} from "@/utils/downloads";
-
+import eventBus from '@/utils/eventBus'
 
 // 状态管理
 const fileList = ref([])
@@ -303,6 +303,19 @@ const handlePreview = async (file) => {
       return
     }
     const downUrl = await downloads.getDownTokeUrl(file['diskFileInfo']['path'])
+    // const downUrl = "http://localhost/1.mp3";
+    // const cover = "http://localhost/cover.png";
+    if (file['diskFileInfo']['fileType'] === 'mp3') {
+        eventBus.emit('media-event', {
+            type: 'audio',
+            value: {
+                title:file['title'],
+                url: downUrl,
+                cover: downUrl
+            }
+        });
+        return
+    }
     previewFile.value.url = downUrl;
     previewFile.value.fileType = file['diskFileInfo']['fileType'];
     currentFile.value = file;

@@ -9,6 +9,7 @@
           <top-nav />
           <router-view />
       </main>
+      <media-layout />
     </div>
   </div>
 </template>
@@ -16,6 +17,7 @@
 <script setup>
 import TopNav from "@/views/layout/TopNav.vue";
 import AsideMenu from "@/views/layout/AsideMenu.vue";
+import MediaLayout from "@/views/layout/MediaLayout.vue";
 
 </script>
 
