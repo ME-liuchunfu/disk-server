@@ -1,0 +1,5 @@
+
+192.168.31.200 nginx-server
+127.0.0.1 localhost
+192.168.31.200 spider-server
+192.168.31.200 mysql-server

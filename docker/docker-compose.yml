@@ -1,0 +1,29 @@
+version : '3.8'
+services:
+  diskserver:
+    image: diskserver:v251121
+    restart: always
+    ports:
+      - "18082:8082"
+    volumes:
+      - ./:/home/app
+      - ./hosts:/etc/hosts
+      - /mnt:/mnt
+    environment:
+      - SAVE_PATH=/mnt/data-sda1/disk-server
+      - DOWN_DISK_URL=http://nginx-server:1080/files/
+      - SPIDER_URL=http://spider-server:5001
+      - MYSQL_HOST=mysql-server
+      - MYSQL_USERNAME=ubuntu
+      - MYSQL_PASSWD=ubuntu@2025@ubuntu
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"    # 单个日志文件最大 10MB
+        max-file: "3"      # 最多保留 3 个日志文件
+    networks:
+      - diskserver_network
+
+networks:
+  diskserver_network:
+    external: true

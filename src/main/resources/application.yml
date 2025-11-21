@@ -1,14 +1,22 @@
 
 disk:
   server:
-    save-path: E://temp/disk
+    save-path: ${SAVE_PATH:./data/disk}
     form-env: true
     pwdsalt: 10
     token-expire-time: 600000
-    download-url: http://10.10.32.20:1080/files/
+    download-url: ${DOWN_DISK_URL:http://localhost:1080/files/}
   spider-server:
-    url: http://10.10.32.99:5001
+    url: ${SPIDER_URL:http://localhost:5001}
     show-video: /api/v1/short-video/video/share/url/parse?url=
+
+
+mysql:
+  host: ${MYSQL_HOST:14.103.137.120}  # 若注释此行，会使用默认值 localhost
+  port: ${MYSQL_PORT:3306}
+  database: ${MYSQL_DB:disk_server}
+  username: ${MYSQL_USERNAME:ubuntu}
+  password: ${MYSQL_PASSWD:ubuntu@2025@ubuntu}
 
 server:
   port: 8082
@@ -26,9 +34,9 @@ spring:
       max-request-size: 10GB
   datasource:
     # MySQL 连接信息
-    url: jdbc:mysql://14.103.137.120:3306/disk_server?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
-    username: ubuntu
-    password: ubuntu@2025@ubuntu
+    url: jdbc:mysql://${mysql.host}:${mysql.port}/${mysql.database}?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${mysql.username}
+    password: ${mysql.password}
     driver-class-name: com.mysql.cj.jdbc.Driver # MySQL 8.x 驱动类，5.x 用 com.mysql.jdbc.Driver
 
     # HikariCP 连接池配置（可选，默认值已优化，按需调整）
