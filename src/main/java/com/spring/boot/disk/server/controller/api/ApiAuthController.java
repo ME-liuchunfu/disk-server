@@ -4,7 +4,9 @@ import com.spring.boot.disk.server.model.Rs;
 import com.spring.boot.disk.server.model.params.AuthModel;
 import com.spring.boot.disk.server.model.params.RegisterModel;
 import com.spring.boot.disk.server.model.resp.LoginResponse;
+import com.spring.boot.disk.server.security.LoginInfo;
 import com.spring.boot.disk.server.security.LoginService;
+import com.spring.boot.disk.server.security.SecurityContext;
 import jakarta.annotation.Resource;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,12 @@ public class ApiAuthController {
     public Rs logout() {
         loginService.logout();
         return Rs.ok();
+    }
+
+    @PostMapping("/info")
+    public Rs info() {
+        LoginInfo loginInfo = SecurityContext.getLoginInfo();
+        return Rs.ok().data(loginService.getInfo(loginInfo));
     }
 
 }

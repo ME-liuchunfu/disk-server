@@ -18,6 +18,7 @@ import com.spring.boot.disk.server.exception.AppException;
 import com.spring.boot.disk.server.model.params.AuthModel;
 import com.spring.boot.disk.server.model.params.RegisterModel;
 import com.spring.boot.disk.server.model.resp.LoginResponse;
+import com.spring.boot.disk.server.model.resp.UserInfoModel;
 import com.spring.boot.disk.server.service.VmDiskUserService;
 import jakarta.annotation.Resource;
 import org.springframework.http.HttpStatus;
@@ -100,6 +101,13 @@ public class LoginService {
                 throw new AppException("错误", e);
             }
         }
+    }
+
+    public UserInfoModel getInfo(LoginInfo loginInfo) {
+        if (loginInfo == null) {
+            throw new AppException("授权错误");
+        }
+        return new UserInfoModel(loginInfo);
     }
 
 }

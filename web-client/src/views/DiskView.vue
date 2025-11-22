@@ -316,6 +316,17 @@ const handlePreview = async (file) => {
         });
         return
     }
+  if (file['diskFileInfo']['fileType'] === 'mp4') {
+    eventBus.emit('media-event', {
+      type: 'video',
+      value: {
+        title:file['title'],
+        url: downUrl,
+        cover: downUrl
+      }
+    });
+    return
+  }
     previewFile.value.url = downUrl;
     previewFile.value.fileType = file['diskFileInfo']['fileType'];
     currentFile.value = file;
@@ -518,6 +529,7 @@ onMounted(() => {
     gap: 20px;
     overflow-y: auto;
     padding: 10px;
+    align-content: flex-start;
 }
 
 .file-item {

@@ -26,7 +26,7 @@
           type="text"
           class="nav-btn"
           @click="showNotification"
-      ></el-button>
+      >{{userInfo.name}}</el-button>
 
       <!-- 用户信息与下拉菜单 -->
       <div class="user-area" @click.stop="toggleUserMenu">
@@ -68,6 +68,7 @@ import {
 } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import eventBus from '@/utils/eventBus'
+import {userAPI} from "@/api/userinfo";
 
 // 状态管理
 const searchText = ref('')
@@ -154,8 +155,8 @@ const handleLogout = () => {
 // 获取用户信息
 const fetchUserInfo = async () => {
   try {
-    // const res = await userAPI.getUserInfo()
-    // userInfo.value = res
+    const res = await userAPI.info()
+    userInfo.value = res
   } catch (error) {
     console.error('获取用户信息失败', error)
   }

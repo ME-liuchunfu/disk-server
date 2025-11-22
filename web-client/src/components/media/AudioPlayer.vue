@@ -523,6 +523,7 @@ onUnmounted(() => {
     padding: 5px;
     width: 50px;
     height: 50px;
+    min-width: 50px;
     display: flex;
     border-radius: 50%;
     overflow: hidden;
@@ -551,6 +552,8 @@ onUnmounted(() => {
     display: flex;
     flex-direction: column;
     vert-align: middle;
+  flex: 1; /* 自适应平分剩余空间（核心） */
+  min-width: 280px;
 }
 /* 音频信息 */
 .audio-info {
@@ -640,6 +643,8 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
     gap: 12px;
+    width: 280px;
+    margin-right: 30px;
 }
 
 .control-btn {

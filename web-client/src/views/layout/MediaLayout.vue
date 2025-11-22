@@ -15,6 +15,19 @@
                 primaryColor="#2c3e50"
             />
         </div>
+        <div class="player-wrapper" v-if="mediaData.type === 'video'">
+            <VideoPlayer
+                :video-src="mediaData.data.url"
+                :video-title="mediaData.data.title"
+                :poster="mediaData.data.cover"
+                primaryColor="#42b983"
+                autoplay
+                @play="handlePlay"
+                @error="handleError"
+                @back="handleBack"
+                @close="handleClose"
+            />
+        </div>
     </div>
 </template>
 
@@ -22,6 +35,8 @@
 import eventBus from '@/utils/eventBus'
 import {onMounted, onUnmounted, ref} from "vue";
 import AudioPlayer from "@/components/media/AudioPlayer.vue";
+import VideoPlayer from "@/components/media/VideoPlayer.vue";
+import {ElMessage} from "element-plus";
 
 const hide = ref(false)
 const mediaData = ref({
@@ -32,6 +47,25 @@ const mediaData = ref({
         title: null,
     }
 })
+
+// 单视频播放回调
+const handlePlay = () => {
+  ElMessage.info('视频开始播放')
+}
+
+const handleError = (err) => {
+  ElMessage.error('视频播放错误:' + err)
+}
+
+// 处理返回按钮逻辑（示例：路由返回）
+const handleBack = () => {
+  handleShowHide()
+}
+
+// 处理关闭按钮逻辑（示例：关闭组件/页面）
+const handleClose = () => {
+  handleShowHide()
+}
 
 const handleShowHide = () =>{
     hide.value = !hide.value;
@@ -46,8 +80,12 @@ const handleReceivedData = (data) => {
             mediaData.value.type = type;
             const mergedObj = Object.assign({}, mediaData.value.data, value);
             mediaData.value.data = mergedObj;
+            hide.value = false;
         } else if (type === 'video') {
-            console.log(type)
+            mediaData.value.type = type;
+            const mergedObj = Object.assign({}, mediaData.value.data, value);
+            mediaData.value.data = mergedObj;
+            hide.value = false;
         }
     }
 }
