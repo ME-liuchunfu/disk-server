@@ -15,11 +15,14 @@ public class DiskDirScanResponse {
     private String title;
 
     private Long refFileId;
+    private Long refAvatarFileId;
 
     private Integer folder;
 
     private Date createTime;
 
     private DiskFileInfo diskFileInfo;
+
+    private String avatarPath;
 
 }

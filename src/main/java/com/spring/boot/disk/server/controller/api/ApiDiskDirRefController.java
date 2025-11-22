@@ -2,10 +2,7 @@ package com.spring.boot.disk.server.controller.api;
 
 
 import com.spring.boot.disk.server.model.Rs;
-import com.spring.boot.disk.server.model.params.DiskDirAddModel;
-import com.spring.boot.disk.server.model.params.DiskDirDelModel;
-import com.spring.boot.disk.server.model.params.DiskDirScanModel;
-import com.spring.boot.disk.server.model.params.DiskDirUpdateModel;
+import com.spring.boot.disk.server.model.params.*;
 import com.spring.boot.disk.server.security.SecurityContext;
 import com.spring.boot.disk.server.service.VmUserFileService;
 import jakarta.annotation.Resource;
@@ -52,4 +49,10 @@ public class ApiDiskDirRefController {
         return Rs.ok();
     }
 
+    @PostMapping("/update/avatar")
+    public Rs updateAvatar(@Validated @RequestBody AddDiskAvatarModel avatarModel) {
+        Long userId = SecurityContext.getUserId();
+        vmUserFileService.updateDiskAvatar(avatarModel, userId);
+        return Rs.ok();
+    }
 }

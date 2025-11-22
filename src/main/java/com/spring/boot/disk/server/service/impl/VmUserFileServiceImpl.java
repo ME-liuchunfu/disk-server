@@ -11,10 +11,7 @@ import com.spring.boot.disk.server.entity.po.VmUserFile;
 import com.spring.boot.disk.server.exception.AppException;
 import com.spring.boot.disk.server.mapper.VmUserFileMapper;
 import com.spring.boot.disk.server.mapstruct.ConvertFactory;
-import com.spring.boot.disk.server.model.params.DiskDirAddModel;
-import com.spring.boot.disk.server.model.params.DiskDirDelModel;
-import com.spring.boot.disk.server.model.params.DiskDirScanModel;
-import com.spring.boot.disk.server.model.params.DiskDirUpdateModel;
+import com.spring.boot.disk.server.model.params.*;
 import com.spring.boot.disk.server.model.resp.DirSelect;
 import com.spring.boot.disk.server.model.resp.DiskDirScanResponse;
 import com.spring.boot.disk.server.model.resp.DiskFileInfo;
@@ -65,7 +62,9 @@ public class VmUserFileServiceImpl extends ServiceImpl<VmUserFileMapper, VmUserF
                     .map(DiskDirScanResponse::getRefFileId)
                     .distinct()
                     .collect(Collectors.toList());
-            List<VmDiskFile> diskFileList = vmDiskFileService.selectListByIds(fileIdList);
+
+            fileIdList.addAll(responseList.stream().map(DiskDirScanResponse::getRefAvatarFileId).filter(Objects::nonNull).distinct().toList());
+            List<VmDiskFile> diskFileList = vmDiskFileService.selectListByIds(new ArrayList<>(new HashSet<>(fileIdList)));
 
             Map<Long, DiskFileInfo> fileMap = diskFileList.stream()
                     .map(ConvertFactory.INST::toDiskFileInfo)
@@ -73,6 +72,10 @@ public class VmUserFileServiceImpl extends ServiceImpl<VmUserFileMapper, VmUserF
 
             for (DiskDirScanResponse response : responseList) {
                 response.setDiskFileInfo(fileMap.get(response.getRefFileId()));
+                DiskFileInfo fileInfo = fileMap.get(response.getRefAvatarFileId());
+                if (Objects.nonNull(fileInfo)) {
+                    response.setAvatarPath(fileInfo.getPath());
+                }
             }
         }
         return responseList;
@@ -199,6 +202,23 @@ public class VmUserFileServiceImpl extends ServiceImpl<VmUserFileMapper, VmUserF
             dirSelects.add(dirSelect);
         }
         return dirSelects;
+    }
+
+    @Override
+    public void updateDiskAvatar(AddDiskAvatarModel avatarModel, Long userId) {
+        LambdaUpdateWrapper<VmUserFile> queryWrapper = new LambdaUpdateWrapper<>();
+        queryWrapper.eq(VmUserFile::getOwner, userId);
+        queryWrapper.eq(VmUserFile::getId, avatarModel.getId());
+        long count = this.count(queryWrapper);
+        if (count == 0) {
+            throw new AppException("当前资源无权修改");
+        }
+        LambdaUpdateWrapper<VmUserFile> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(VmUserFile::getOwner, userId);
+        updateWrapper.eq(VmUserFile::getId, avatarModel.getId());
+        VmUserFile vmUserFile = new VmUserFile();
+        vmUserFile.setRefAvatarFileId(avatarModel.getFileId());
+        this.update(vmUserFile, updateWrapper);
     }
 
 }

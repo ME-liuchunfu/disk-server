@@ -27,6 +27,8 @@ public class VmUserFile {
 
     private Long refFileId;
 
+    private Long refAvatarFileId;
+
     private Integer folder;
 
     private Date createTime;

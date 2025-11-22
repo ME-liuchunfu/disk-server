@@ -90,6 +90,7 @@ public class ApplicationSqlRunner implements ApplicationRunner {
                 "  `parent_id` bigint DEFAULT NULL COMMENT '父级',\n" +
                 "  `title` varchar(255) NOT NULL DEFAULT '' COMMENT '标题',\n" +
                 "  `ref_file_id` bigint DEFAULT NULL COMMENT '关联文件id',\n" +
+                "  `ref_avatar_file_id` bigint DEFAULT NULL COMMENT '关联头像文件id',\n" +
                 "  `folder` tinyint(1) NOT NULL DEFAULT '1' COMMENT '目录',\n" +
                 "  `create_time` datetime DEFAULT NULL COMMENT '创建时间',\n" +
                 "  `owner` bigint NOT NULL COMMENT '所属人',\n" +

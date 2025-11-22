@@ -2,10 +2,7 @@ package com.spring.boot.disk.server.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.spring.boot.disk.server.entity.po.VmUserFile;
-import com.spring.boot.disk.server.model.params.DiskDirAddModel;
-import com.spring.boot.disk.server.model.params.DiskDirDelModel;
-import com.spring.boot.disk.server.model.params.DiskDirScanModel;
-import com.spring.boot.disk.server.model.params.DiskDirUpdateModel;
+import com.spring.boot.disk.server.model.params.*;
 import com.spring.boot.disk.server.model.resp.DirSelect;
 import com.spring.boot.disk.server.model.resp.DiskDirScanResponse;
 
@@ -22,5 +19,7 @@ public interface VmUserFileService extends IService<VmUserFile> {
      void delDiskItem(DiskDirDelModel delModel, Long userId);
 
     List<DirSelect> getDir(Long parentId, Long userId);
+
+    void updateDiskAvatar(AddDiskAvatarModel avatarModel, Long userId);
 
 }

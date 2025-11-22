@@ -26,7 +26,7 @@
           type="text"
           class="nav-btn"
           @click="showNotification"
-      >{{userInfo.name}}</el-button>
+      ></el-button>
 
       <!-- 用户信息与下拉菜单 -->
       <div class="user-area" @click.stop="toggleUserMenu">
