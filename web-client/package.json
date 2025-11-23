@@ -12,6 +12,7 @@
     "@videojs/http-streaming": "^3.17.2",
     "axios": "^1.13.2",
     "core-js": "^3.8.3",
+    "docx-preview": "^0.3.7",
     "element-plus": "^2.11.7",
     "js-cookie": "^3.0.5",
     "json-bigint": "^1.0.0",
@@ -24,7 +25,8 @@
     "vue": "^3.2.13",
     "vue-office": "^0.0.5",
     "vue-office-pdf": "^0.0.1-beta.10",
-    "vue-router": "^4.6.3"
+    "vue-router": "^4.6.3",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",

@@ -30,8 +30,14 @@
             />
         </div>
         <div class="player-wrapper" v-show="mediaData.type === 'pdf'">
-          <pdf-viewer :initial-page="1" :initial-zoom="1"/>
+          <pdf-viewer @close="handleClose" :initial-page="1" :initial-zoom="1"/>
         </div>
+        <div class="player-wrapper" v-show="mediaData.type === 'doc'">
+          <docx-viewer @close="handleClose" />
+        </div>
+      <div class="player-wrapper" v-show="mediaData.type === 'xls'">
+        <xls-viewer @close="handleClose" />
+      </div>
     </div>
 </template>
 
@@ -42,6 +48,8 @@ import AudioPlayer from "@/components/media/AudioPlayer.vue";
 import VideoPlayer from "@/components/media/VideoPlayer.vue";
 import {ElMessage} from "element-plus";
 import PdfViewer from "@/components/media/PdfViewer.vue";
+import DocxViewer from "@/components/media/DocxViewer.vue";
+import XlsViewer from "@/components/media/XlsViewer.vue";
 
 const audioRate = ref(false)
 const hide = ref(false)
@@ -105,26 +113,36 @@ const handleReceivedData = (data) => {
               value: {url: mergedObj.url}
             })
             hide.value = false;
+        } else if (type === 'doc') {
+          mediaData.value.type = type;
+          const mergedObj = Object.assign({}, mediaData.value.data, value);
+          mediaData.value.data = mergedObj;
+          eventBus.emit('media-event:predoc', {
+            type: 'show',
+            value: {url: mergedObj.url, title: mergedObj.title}
+          })
+          hide.value = false;
+        }  else if (type === 'xls') {
+          mediaData.value.type = type;
+          const mergedObj = Object.assign({}, mediaData.value.data, value);
+          mediaData.value.data = mergedObj;
+          eventBus.emit('media-event:prexls', {
+            type: 'show',
+            value: {url: mergedObj.url, title: mergedObj.title}
+          })
+          hide.value = false;
         }
     }
-}
-
-const prePdfData = (event) => {
-  if (event['type'] === 'close') {
-    handleShowHide()
-  }
 }
 
 // 组件挂载时监听事件
 onMounted(() => {
     eventBus.on('media-event', handleReceivedData)
-    eventBus.on('media-event:prepdf', prePdfData)
 })
 
 // 组件卸载时移除监听，避免内存泄漏
 onUnmounted(() => {
     eventBus.off('media-event', handleReceivedData)
-    eventBus.off('media-event:prepdf', prePdfData)
 })
 
 </script>

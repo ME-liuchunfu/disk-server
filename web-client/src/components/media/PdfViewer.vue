@@ -148,7 +148,7 @@ const props = defineProps({
 })
 
 // 事件发射
-const emit = defineEmits(['loaded', 'error', 'zoom-change'])
+const emit = defineEmits(['loaded', 'error', 'zoom-change', 'close'])
 
 // 核心状态
 const pdfIframe = ref(null) // iframe 引用
@@ -159,9 +159,7 @@ const errorMessage = ref('') // 错误信息
 const iframeSrc = ref('')
 
 const handleClose = () => {
-  eventBus.emit('media-event:prepdf', {
-    type: 'close'
-  })
+  emit('close')
 }
 
 // 重新加载 PDF

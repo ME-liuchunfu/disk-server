@@ -36,9 +36,8 @@
                 </el-button-group>
                 <el-button-group>
                     <el-button type="success" :icon="FolderAdd" @click="addFolderHandler"/>
-                    <el-button type="primary" :icon="Edit" />
                     <el-button type="primary" :icon="Share" />
-                    <el-button type="primary" :icon="Delete" />
+                    <el-button type="primary" :icon="Delete" @click="btnDeleteHandle" />
                 </el-button-group>
             </el-space>
         </div>
@@ -110,22 +109,6 @@
         </div>
         <el-empty v-else description="目录为空" />
 
-        <!-- 预览弹窗 -->
-        <el-dialog
-                v-model="previewVisible"
-                :title="currentFile?.name"
-                width="100%"
-                height="100vh"
-                append-to-body
-                :fullscreen="isFullscreen"
-        >
-            <file-preview
-                    :file-type="previewFile.fileType"
-                    :url="previewFile.url"
-                    @toggle-fullscreen="isFullscreen = !isFullscreen"
-            ></file-preview>
-        </el-dialog>
-
         <!-- 新增目录 -->
         <add-folder @flush="enterDirPath(null)" />
         <!-- 重命名 -->
@@ -153,11 +136,9 @@ import {
     FolderOpened, File, Image, Video, Music,
     Document,
     Delete,
-    Edit,
     Share,
     FolderAdd, ArrowLeftBold
 } from '@element-plus/icons-vue'
-import FilePreview from '@/components/file/FilePreview.vue'
 import { formatFileSize } from '@/utils/format'
 import { diskAPI } from '@/api/disk'
 import {ElMessage, ElMessageBox} from "element-plus"
@@ -167,22 +148,15 @@ import RenameDirDialog from "@/views/disk/RenameDirDialog.vue";
 import {downloads} from "@/utils/downloads";
 import eventBus from '@/utils/eventBus'
 import AddDiskAvatarDialog from "@/views/disk/AddDiskAvatarDialog.vue";
+import {commonUtil} from "@/utils/utils";
 
 // 状态管理
 const fileList = ref([])
 const viewType = ref('grid') // 视图类型：grid/list
-const previewVisible = ref(false)
-const currentFile = ref(null)
-const isFullscreen = ref(false)
 const contextMenuFile = ref(null)
 const contextMenuTop = ref(0)
 const contextMenuLeft = ref(0)
 const dirPathQueue = ref([])
-
-const previewFile = ref({
-  'url': '',
-  'fileType': ''
-})
 
 onMounted(()=>{
     try {
@@ -318,12 +292,28 @@ const handlePreview = async (file) => {
     });
     return
   }
-    previewFile.value.url = downUrl;
-    previewFile.value.fileType = file['diskFileInfo']['fileType'];
-    currentFile.value = file;
-
-    previewVisible.value = true
-    isFullscreen.value = false
+  if (commonUtil.inArray(['doc', 'docx'], file['diskFileInfo']['fileType'])) {
+    eventBus.emit('media-event', {
+      type: 'doc',
+      value: {
+        title:file['title'],
+        url: downUrl,
+        cover: coverUrl
+      }
+    });
+    return
+  }
+  if (commonUtil.inArray(['xls', 'xlsx'], file['diskFileInfo']['fileType'])) {
+    eventBus.emit('media-event', {
+      type: 'xls',
+      value: {
+        title:file['title'],
+        url: downUrl,
+        cover: coverUrl
+      }
+    });
+    return
+  }
 }
 
 // 处理下载
@@ -426,6 +416,37 @@ const handlerClickItem = (file) => {
         return;
     }
     handlePreview(file);
+}
+
+const btnDeleteHandle = () => {
+    let len = dirPathQueue.value.length
+    if (len === 0) {
+      ElMessage.info('不允许删除根目录')
+      return
+    }
+    let dirPath = dirPathQueue.value[len -1]
+    ElMessageBox.confirm(
+        `确定要删除 ${dirPath.title} 及其子目录文件 ?`,
+        'Warning',
+        {
+          confirmButtonText: 'OK',
+          cancelButtonText: 'Cancel',
+          type: 'warning',
+        }
+    )
+      .then(async () => {
+        try {
+          await diskAPI.del({ids: [dirPath.id]})
+          ElMessage.success("删除成功")
+          dirPathQueue.value.pop()
+          enterDirPath(null);
+        } catch (error) {
+          ElMessage.error(error || "删除失败")
+        }
+      })
+      .catch(()=>{
+
+      })
 }
 
 const addFolderHandler = async () =>{
