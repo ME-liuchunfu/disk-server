@@ -300,7 +300,7 @@ const props = defineProps({
 // 事件发射
 const emit = defineEmits([
     'play', 'pause', 'ended', 'error',
-    'prev', 'next', 'progress-change', 'loaded'
+    'prev', 'next', 'progress-change', 'loaded', 'playing'
 ])
 
 // 核心状态
@@ -340,6 +340,7 @@ const togglePlay = () => {
         emit('play')
     }
     isPlaying.value = !isPlaying.value
+    emit('playing', isPlaying.value)
 }
 
 // 静音切换
@@ -414,6 +415,7 @@ const handleLoadedMetadata = () => {
         duration.value = audio.duration || 0
         audio.volume = volume.value
         emit('loaded')
+        togglePlay();
     }
 }
 

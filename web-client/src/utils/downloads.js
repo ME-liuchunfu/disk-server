@@ -11,8 +11,11 @@ export const downloads = {
         }
         return null;
     },
-    getDownTokeUrl: async (uri) => {
+    tokens: async () => {
         const url = await request.get('/api/disk/file/manager/token')
+        return url;
+    },
+    joinUrl: (url, uri) => {
         if (uri.startsWith("/") && url.endsWith("/")) {
             uri = uri.substring(1, uri.length)
             return url + uri;
@@ -20,6 +23,13 @@ export const downloads = {
             return url + uri;
         }
         return url + "/" + uri;
+    },
+    getDownTokeUrl: async (uri) => {
+        if (!uri) {
+            return null;
+        }
+        const url = await downloads.tokens()
+        return downloads.joinUrl(url, uri);
     },
     down: async (url, fileName) => {
         try {

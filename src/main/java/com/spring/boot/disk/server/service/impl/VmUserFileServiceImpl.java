@@ -53,6 +53,8 @@ public class VmUserFileServiceImpl extends ServiceImpl<VmUserFileMapper, VmUserF
         if (StrUtil.isNotBlank(title)) {
             queryWrapper.like(VmUserFile::getTitle, title);
         }
+
+        queryWrapper.orderByAsc(VmUserFile::getId);
         List<VmUserFile> list = this.list(queryWrapper);
         List<DiskDirScanResponse> responseList = list.stream().map(ConvertFactory.INST::toDiskDirScanResponse).collect(Collectors.toList());
         if (CollectionUtil.isNotEmpty(responseList)) {

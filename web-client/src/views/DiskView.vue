@@ -53,19 +53,22 @@
                     @click="handlerClickItem(file)"
                     @contextmenu.prevent="showContextMenu(file, $event)"
                 >
-                    <div class="file-icon">
+                    <img class="file-grid-img" v-if="file['avatarUrl']" :src="file['avatarUrl']">
+                    <div class="file-grid-content">
+                      <div class="file-icon" v-if="!file['avatarUrl']">
                         <el-icon :size="40">
-                            <component :is="getFileIcon(getFileType(file))"></component>
+                          <component :is="getFileIcon(getFileType(file))"></component>
                         </el-icon>
-                    </div>
-                    <el-tooltip :content="file.title" placement="right" effect="light">
+                      </div>
+                      <el-tooltip :content="file.title" placement="right" effect="light">
                         <div class="file-name">
-                            {{ file.title }}
+                          {{ file.title }}
                         </div>
-                    </el-tooltip>
-                    <div class="file-meta">
+                      </el-tooltip>
+                      <div class="file-meta">
                         <span>{{ formatSize(file.size) }}</span>
                         <span>{{ file.createTime }}</span>
+                      </div>
                     </div>
                 </div>
             </div>
@@ -123,27 +126,12 @@
             ></file-preview>
         </el-dialog>
 
-        <el-dialog
-            v-model="dialogs.addDir.show"
-            :title="dialogs.addDir.title"
-            width="60%"
-            >
-            <AddFolder @create="createAddDir"
-                       @cancel="dialogs.addDir.show = false"
-                       :folders="dialogs.addDir.folders"/>
-        </el-dialog>
-
+        <!-- 新增目录 -->
+        <add-folder @flush="enterDirPath(null)" />
         <!-- 重命名 -->
-        <el-dialog  v-model="dialogs.updateDir.show"
-                    :title="dialogs.updateDir.title"
-                    width="500px"
-        >
-          <RenameDirDialog
-              @submit="enterDirPath(null);dialogs.updateDir.show = false;"
-              @cancel="dialogs.updateDir.show = false"
-              :folder="dialogs.updateDir.folder"/>
-        </el-dialog>
-
+        <rename-dir-dialog @flush="enterDirPath(null)"/>
+        <!-- 新增封面 -->
+        <add-disk-avatar-dialog @flush="enterDirPath(null)"/>
         <!-- 右键菜单 -->
         <div
                 v-if="contextMenuFile"
@@ -153,12 +141,13 @@
             <div class="menu-item" v-if="contextMenuFile.folder === 0" @click="handleDownload(contextMenuFile)">下载</div>
             <div class="menu-item" @click="handleDelete(contextMenuFile)">删除</div>
             <div class="menu-item" @click="handleRename(contextMenuFile)">重命名</div>
+            <div class="menu-item" @click="handleAddAvatar(contextMenuFile)">更新封面</div>
         </div>
     </div>
 </template>
 
 <script setup>
-import {ref, onMounted, watch} from 'vue'
+import {ref, onMounted} from 'vue'
 import {
     Folder, Grid, Refresh,
     FolderOpened, File, Image, Video, Music,
@@ -177,6 +166,7 @@ import AddFolder from '@/views/disk/AddDiskDir.vue'
 import RenameDirDialog from "@/views/disk/RenameDirDialog.vue";
 import {downloads} from "@/utils/downloads";
 import eventBus from '@/utils/eventBus'
+import AddDiskAvatarDialog from "@/views/disk/AddDiskAvatarDialog.vue";
 
 // 状态管理
 const fileList = ref([])
@@ -194,39 +184,14 @@ const previewFile = ref({
   'fileType': ''
 })
 
-watch(
-    () => dirPathQueue.value,
-    () => {
-        localStorage.setItem("cacheQue", dirPathQueue.value)
-    },
-    // { immediate: true } // 初始化时立即执行
-)
-
 onMounted(()=>{
     try {
-        const cacheQue = localStorage.getItem("cacheQue") || '[]'
-        dirPathQueue.value = JSON.parse(cacheQue)
+      const jsonPathdir = localStorage.getItem("cacheDirQue") || '[]'
+      dirPathQueue.value = JSON.parse(jsonPathdir)
     } catch (e) {
-        console.log(e)
+      console.log(e)
     }
-})
-
-const dialogs = ref({
-    addDir:{
-        show: false,
-        title: "目录操作",
-        folders: []
-    },
-    updateDir:{
-      show: false,
-      title: "重命名",
-      folder: {}
-    },
-    previewConfig: {
-        show: false,
-        fileType: '',
-        url: null
-    }
+    enterDirPath();
 })
 
 const loadingStore = useLoadingStore()
@@ -237,6 +202,14 @@ const fetchFileList = async (data) => {
         const flush = !data;
         data = data || {}
         const res = await diskAPI.scan(data)
+        if (res) {
+          const url = await downloads.tokens()
+          for (let k in res) {
+            if (res[k]['avatarPath']) {
+              res[k]['avatarUrl'] = downloads.joinUrl(url, res[k]['avatarPath'])
+            }
+          }
+        }
         fileList.value = res || [];
         if (flush) {
             dirPathQueue.value = [];
@@ -282,7 +255,9 @@ const getFileIcon = (type) => {
         case 'folder': return FolderOpened
         case 'image': return Image
         case 'video': return Video
+        case 'mp4': return Video
         case 'audio': return Music
+        case 'mp3': return Music
         case 'document': return Document
         default: return File
     }
@@ -303,6 +278,11 @@ const handlePreview = async (file) => {
       return
     }
     const downUrl = await downloads.getDownTokeUrl(file['diskFileInfo']['path'])
+    let coverUrl = null;
+    if (file['avatarUrl']) {
+      coverUrl = file['avatarUrl'];
+    }
+
     // const downUrl = "http://localhost/1.mp3";
     // const cover = "http://localhost/cover.png";
     if (file['diskFileInfo']['fileType'] === 'mp3') {
@@ -311,7 +291,7 @@ const handlePreview = async (file) => {
             value: {
                 title:file['title'],
                 url: downUrl,
-                cover: downUrl
+                cover: coverUrl
             }
         });
         return
@@ -322,7 +302,7 @@ const handlePreview = async (file) => {
       value: {
         title:file['title'],
         url: downUrl,
-        cover: downUrl
+        cover: coverUrl
       }
     });
     return
@@ -399,15 +379,38 @@ const handleDelete = (file) => {
 
 // 处理重命名
 const handleRename = (file) => {
-  dialogs.value.updateDir.folder = file;
   closeContextMenu();
-  dialogs.value.updateDir.show = true;
+  eventBus.emit('event:disk:rename-dir', {
+    type: 'rename',
+    value: {
+      id: file.id,
+      title: file.title,
+      folder: file.folder
+    }
+  })
+}
+
+// 更新封面
+const handleAddAvatar = (file) => {
+  eventBus.emit('event:disk:add-avatar', {
+    type: 'avatar',
+    value: {...file}
+  })
+}
+
+const cacheDirHandle = () => {
+  try{
+   localStorage.setItem("cacheDirQue", JSON.stringify([...dirPathQueue.value]));
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 const handlerClickItem = (file) => {
     if (file['folder'] === 1) {
         ElMessage.success('进入目录:' + file.title);
         dirPathQueue.value.push({id:file.id, title: file.title});
+        cacheDirHandle()
         enterDirPath();
         return;
     }
@@ -421,8 +424,22 @@ const addFolderHandler = async () =>{
     try {
         loadingStore.show();
         const res = await diskAPI.getDir(parentId);
-        dialogs.value.addDir.folders = res || [];
-        dialogs.value.addDir.show = true;
+        const folders = res || [];
+        let selectIndex = -1;
+        if (len > 0) {
+          const id = dirPathQueue.value[len -1]['id'];
+          let ids = folders.filter(v=>v['id'] === id)
+          if (ids.length > 0) {
+            selectIndex = folders.indexOf(ids[0])
+          }
+        }
+        eventBus.emit('event:disk:add-folder', {
+          type: 'addfolder',
+          value: {
+            folders: folders,
+            selectIndex: selectIndex
+          }
+        })
     } catch (err) {
         console.log(err)
     }
@@ -438,6 +455,7 @@ const backDirHandler = () => {
     if (len > 0) {
         dirPathQueue.value.pop();
     }
+    cacheDirHandle()
     fetchFileList({
         parentId: parentId
     })
@@ -459,14 +477,6 @@ const enterDirPath = (index) => {
     })
 }
 
-const createAddDir = (item) => {
-    console.log(item);
-    enterDirPath();
-}
-
-onMounted(() => {
-    fetchFileList()
-})
 </script>
 
 <style scoped>
@@ -531,13 +541,37 @@ onMounted(() => {
     padding: 10px;
     align-content: flex-start;
 }
-
+.file-grid-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  object-fit: cover;
+  object-position: center; /* 图片居中显示 */
+  opacity: 0.7; /* 可选：调整背景图透明度 */
+  z-index: 0; /* 底层：确保兄弟元素在上方 */
+}
+.file-grid-content {
+  position: relative; /* 相对定位，提升层级 */
+  z-index: 1; /* 高于背景图 z-index:0 */
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  flex-wrap: nowrap;
+  align-content: flex-start;
+  flex-direction: column;
+}
 .file-item {
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
     width: 160px;
-    max-height: 120px;
-    height: 120px;
+    height: 180px;
     text-align: center;
-    cursor: pointer;
     transition: all 0.3s;
     padding: 15px;
     border-radius: 8px;
@@ -559,6 +593,7 @@ onMounted(() => {
     overflow: hidden;
     text-overflow: ellipsis;
     margin-bottom: 5px;
+  width: 100%;
 }
 
 .file-meta {

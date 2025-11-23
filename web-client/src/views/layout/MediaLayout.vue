@@ -4,7 +4,7 @@
         <!-- 音频 -->
         <div class="player-container" v-if="mediaData.type === 'audio'">
             <div class="player-container-icon" v-show="hide && mediaData.data.url">
-                <div class="audio-cover rotate" @click="handleShowHide">
+                <div class="audio-cover" :class="{'rotate': audioRate}" @click="handleShowHide">
                     <img :src="mediaData.data.cover" :alt="mediaData.data.title" class="cover-img">
                 </div>
             </div>
@@ -12,6 +12,7 @@
                 :audio-src="mediaData.data.url"
                 :audio-title="mediaData.data.title"
                 :cover-src="mediaData.data.cover"
+                @playing="audioPlay"
                 primaryColor="#2c3e50"
             />
         </div>
@@ -38,6 +39,7 @@ import AudioPlayer from "@/components/media/AudioPlayer.vue";
 import VideoPlayer from "@/components/media/VideoPlayer.vue";
 import {ElMessage} from "element-plus";
 
+const audioRate = ref(false)
 const hide = ref(false)
 const mediaData = ref({
     type: null,
@@ -47,6 +49,10 @@ const mediaData = ref({
         title: null,
     }
 })
+
+const audioPlay = (data) => {
+  audioRate.value = data
+}
 
 // 单视频播放回调
 const handlePlay = () => {

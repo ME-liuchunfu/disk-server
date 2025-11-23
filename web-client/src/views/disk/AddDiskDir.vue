@@ -1,5 +1,10 @@
 <template>
-    <div>
+  <el-dialog
+      v-model="show"
+      title="更改封面"
+      width="500"
+      align-center
+  >
         <el-form
             ref="folderFormRef"
             :model="folderForm"
@@ -64,7 +69,6 @@
                     placeholder="请选择父级文件夹"
                     clearable
                     filterable
-                    default-first-option
                     :filter-method="filterParentFolders"
                 >
                     <el-option :value="null" label="-- 无（根目录） --" />
@@ -83,11 +87,11 @@
                 <el-button type="primary" native-type="submit">确认创建</el-button>
             </el-form-item>
         </el-form>
-    </div>
+  </el-dialog>
 </template>
 
 <script setup>
-import { ref, reactive, defineProps, defineEmits } from 'vue';
+import { ref, reactive, defineEmits } from 'vue';
 import { ElMessage } from 'element-plus';
 import { diskAPI } from '@/api/disk'
 import AnyUpload from '@/components/file/AnyUpload.vue'
@@ -95,21 +99,23 @@ import {
     Search
 } from '@element-plus/icons-vue'
 import { useLoadingStore } from '@/stores/loading';
+import eventBus from "@/utils/eventBus";
 
-// 接收父组件传入的文件夹列表
-const props = defineProps({
-    folders: {
-        type: Array,
-        default: () => [],
-        validator: (value) => {
-            return value.every(item => 'id' in item && 'name' in item);
-        }
+eventBus.on('event:disk:add-folder', event => {
+  const value = event['value']
+  if (event['type'] === 'addfolder') {
+    resetForm();
+    folders.value = value['folders'] || []
+    const selectIndex = value['selectIndex']
+    if (selectIndex >= 0) {
+      folderForm.parentId = folders.value[selectIndex]['id'];
     }
-});
-
+    show.value = true;
+  }
+})
 // 定义事件
-const emit = defineEmits(['create', 'cancel']);
-
+const emit = defineEmits(['flush']);
+const show = ref(false)
 // 表单数据
 const folderForm = reactive({
     name: null,
@@ -119,11 +125,15 @@ const folderForm = reactive({
     from: 1,
     outer: null
 });
-
 const outerData = ref({
     show: false,
     data: []
 })
+// 文件夹过滤相关
+const folders = ref([])
+const filteredParentFolders = ref([]);
+// 表单引用
+const folderFormRef = ref(null);
 
 // 表单规则
 const formRules = {
@@ -160,32 +170,26 @@ const handlerOuter = async () => {
     loadingStore.hide();
 }
 
-// 文件夹过滤相关
-const filteredParentFolders = ref([...props.folders]);
-
 // 过滤父级文件夹的方法
 const filterParentFolders = (query) => {
     if (!query) {
-        filteredParentFolders.value = [...props.folders];
+        filteredParentFolders.value = [...folders.value];
         return;
     }
 
     const keyword = query.toLowerCase();
-    filteredParentFolders.value = props.folders.filter(folder =>
+    filteredParentFolders.value = folders.value.filter(folder =>
         folder.name.toLowerCase().includes(keyword)
     );
 };
 
 const handlerUploadSuccess = (res) => {
-  console.log("upload", res);
+  // console.log("upload", res);
   if (res && res['refId']) {
       folderForm.refFileId = res['refId'];
       folderForm.name = res['originalFilename'];
   }
 }
-
-// 表单引用
-const folderFormRef = ref(null);
 
 // 提交表单
 const handleSubmit = async () => {
@@ -230,8 +234,8 @@ const handleSubmit = async () => {
             console.log(res)
         }
         // 触发创建事件
-        emit('create', newItem);
-
+        emit('flush', newItem);
+        show.value = false;
         // 重置表单
         resetForm();
 
@@ -246,7 +250,7 @@ const handleSubmit = async () => {
 // 取消操作
 const handleCancel = () => {
     resetForm();
-    emit('cancel');
+    show.value = false
 };
 
 // 重置表单
