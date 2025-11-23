@@ -491,6 +491,12 @@ watch(() => props.defaultQuality, (newVal) => {
   }
 }, {immediate: true})
 
+watch(() => props.poster, (newVal) => {
+  if (newVal && player.value) {
+    player.value.poster(newVal)
+  }
+}, {immediate: true})
+
 // 初始化与销毁
 onMounted(() => {
   initPlayer()

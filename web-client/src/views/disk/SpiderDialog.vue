@@ -89,7 +89,10 @@ const handleSubmit = async () => {
     await formDataRef.value.validate();
     loadingStore.show();
     // 准备提交的数据（深拷贝避免修改源数据）
-    const dataForm = {...formData};
+    const dataForm = {
+      url: formData.url,
+      folderId: formData.folderId
+    };
     let regex = /http[s]?:\/\/[\w.-]+[\w\/-]*[\w.-]*\??[\w=&:\-\+\%]*[/]*/;
     dataForm['url'] = dataForm['url'].match(regex)[0];
     let res = await diskAPI.spider(dataForm)
