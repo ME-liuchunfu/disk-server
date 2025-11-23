@@ -307,6 +307,17 @@ const handlePreview = async (file) => {
     });
     return
   }
+  if (file['diskFileInfo']['fileType'] === 'pdf') {
+    eventBus.emit('media-event', {
+      type: 'pdf',
+      value: {
+        title:file['title'],
+        url: downUrl,
+        cover: coverUrl
+      }
+    });
+    return
+  }
     previewFile.value.url = downUrl;
     previewFile.value.fileType = file['diskFileInfo']['fileType'];
     currentFile.value = file;
@@ -533,6 +544,7 @@ const enterDirPath = (index) => {
     border-radius: 3px;
 }
 .file-grid {
+  margin-bottom: 30px;
     width: 100%;
     display: flex;
     flex-wrap: wrap;

@@ -29,6 +29,9 @@
                 @close="handleClose"
             />
         </div>
+        <div class="player-wrapper" v-show="mediaData.type === 'pdf'">
+          <pdf-viewer :initial-page="1" :initial-zoom="1"/>
+        </div>
     </div>
 </template>
 
@@ -38,6 +41,7 @@ import {onMounted, onUnmounted, ref} from "vue";
 import AudioPlayer from "@/components/media/AudioPlayer.vue";
 import VideoPlayer from "@/components/media/VideoPlayer.vue";
 import {ElMessage} from "element-plus";
+import PdfViewer from "@/components/media/PdfViewer.vue";
 
 const audioRate = ref(false)
 const hide = ref(false)
@@ -92,18 +96,35 @@ const handleReceivedData = (data) => {
             const mergedObj = Object.assign({}, mediaData.value.data, value);
             mediaData.value.data = mergedObj;
             hide.value = false;
+        } else if (type === 'pdf') {
+            mediaData.value.type = type;
+            const mergedObj = Object.assign({}, mediaData.value.data, value);
+            mediaData.value.data = mergedObj;
+            eventBus.emit('media-event:prepdf', {
+              type: 'show',
+              value: {url: mergedObj.url}
+            })
+            hide.value = false;
         }
     }
+}
+
+const prePdfData = (event) => {
+  if (event['type'] === 'close') {
+    handleShowHide()
+  }
 }
 
 // 组件挂载时监听事件
 onMounted(() => {
     eventBus.on('media-event', handleReceivedData)
+    eventBus.on('media-event:prepdf', prePdfData)
 })
 
 // 组件卸载时移除监听，避免内存泄漏
 onUnmounted(() => {
     eventBus.off('media-event', handleReceivedData)
+    eventBus.off('media-event:prepdf', prePdfData)
 })
 
 </script>
