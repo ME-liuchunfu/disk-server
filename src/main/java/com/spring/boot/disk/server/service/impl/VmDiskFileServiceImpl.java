@@ -254,4 +254,106 @@ public class VmDiskFileServiceImpl extends ServiceImpl<VmDiskFileMapper, VmDiskF
         return String.format("%s%s%s/", diskServerConfig.getDownloadUrl(), step, encode);
     }
 
+    @Override
+    public List<FileRes> outerAllDown(OuterDownModel outerModel, String userName) {
+        String serverApi = spiderServerConfig.joinUri(spiderServerConfig.getShowVideo());
+        String[] urls = outerModel.getUrls();
+        CompletableFuture<FileRes>[] futures = new CompletableFuture[urls.length];
+        for (int i = 0; i < urls.length; i++) {
+            String url = urls[i];
+            futures[i] = CompletableFuture.supplyAsync(()->{
+                FileRes fileRes = null;
+                try {
+//                    String down = extractUrl(url);
+                    String encode = URLEncoder.encode(url, "utf-8");
+                    String response = HttpUtil.get(serverApi + encode);
+                    JSONObject jsonObject = JSON.parseObject(response);
+                    JSONObject data = jsonObject.getJSONObject("data");
+                    String video_url = data.getString("video_url");
+                    String cover_url = data.getString("cover_url");
+                    String title = data.getString("title");
+                    File mp4tempFile = File.createTempFile(UUID.fastUUID().toString(), ".mp4");
+                    HttpUtil.downloadFile(video_url, mp4tempFile);
+                    String dirPath = diskServerConfig.dirPath();
+                    Path path = diskServerConfig.fromDirPath(dirPath);
+                    String hashValue = FileHasher.calculateFileHash(mp4tempFile, FileHasher.Algorithm.SHA256);
+                    VmDiskFile vmDiskFile = this.selectByHashValue(hashValue);
+                    if (Objects.isNull(vmDiskFile)) {
+                        FileInfo fileInfo = FileInfoUtil.transferTo(path, mp4tempFile, title, hashValue, "mp4");
+                        fileRes = new FileRes();
+                        fileRes.setFileSize(fileInfo.getFileSize());
+                        fileRes.setOriginalFilename(fileInfo.getFileName());
+                        fileRes.setPath(fileInfo.getRelativePath());
+                        fileRes.setHashValue(fileInfo.getHashValue());
+                        // 写入
+                        vmDiskFile = new VmDiskFile();
+                        vmDiskFile.setFileSize(fileInfo.getFileSize());
+                        vmDiskFile.setFileName(fileInfo.getFileName());
+                        vmDiskFile.setPath(fileInfo.getRelativePath());
+                        vmDiskFile.setHashValue(fileInfo.getHashValue());
+                        vmDiskFile.setFileType(fileInfo.getFileType());
+                        vmDiskFile.setOwner(userName);
+                        this.insert(vmDiskFile);
+                        fileRes.setRefId(vmDiskFile.getId());
+                    } else {
+                        fileRes = new FileRes();
+                        fileRes.setFileSize(vmDiskFile.getFileSize());
+                        fileRes.setOriginalFilename(vmDiskFile.getFileName());
+                        fileRes.setPath(vmDiskFile.getPath());
+                        fileRes.setHashValue(vmDiskFile.getHashValue());
+                        fileRes.setRefId(vmDiskFile.getId());
+                    }
+
+                    OperateLogTask.getIns().logOperate(CountStr.concat(this.getClass(), "outerDown"), jsonObject.toJSONString(), OperateLogType.OUTER_FILE_DOWN, userName);
+
+                    if (StrUtil.isNotBlank(cover_url)) {
+                        File pngtempFile = File.createTempFile(UUID.fastUUID().toString(), ".png");
+                        HttpUtil.downloadFile(cover_url, pngtempFile);
+                        Path pngPath = diskServerConfig.fromDirPath(dirPath);
+                        String pngHashValue = FileHasher.calculateFileHash(pngtempFile, FileHasher.Algorithm.SHA256);
+                        VmDiskFile pngVmDiskFile = this.selectByHashValue(pngHashValue);
+                        if (Objects.isNull(pngVmDiskFile)) {
+                            FileInfo fileInfo = FileInfoUtil.transferTo(pngPath, pngtempFile, title, pngHashValue, "png");
+                            // 写入
+                            pngVmDiskFile = new VmDiskFile();
+                            pngVmDiskFile.setFileSize(fileInfo.getFileSize());
+                            pngVmDiskFile.setFileName(fileInfo.getFileName());
+                            pngVmDiskFile.setPath(fileInfo.getRelativePath());
+                            pngVmDiskFile.setHashValue(fileInfo.getHashValue());
+                            pngVmDiskFile.setFileType(fileInfo.getFileType());
+                            pngVmDiskFile.setOwner(userName);
+                            this.insert(pngVmDiskFile);
+                        }
+                        fileRes.setCoverId(pngVmDiskFile.getId());
+                        fileRes.setCoverPath(pngVmDiskFile.getPath());
+                        if (pngtempFile.exists()) {
+                            pngtempFile.delete();
+                        }
+                    }
+ //                    File imgtempFile = File.createTempFile(UUID.fastUUID().toString(), ".png");
+//                    HttpUtil.downloadFile(cover_url, imgtempFile);
+                    if (mp4tempFile.exists()) {
+                        mp4tempFile.delete();
+                    }
+
+                } catch (Exception e) {
+                    log.error("解析错误, url:{}", url, e);
+                }
+                return fileRes;
+            });
+        }
+        List<FileRes> resList = new ArrayList<>();
+        try {
+            CompletableFuture.allOf(futures).get();
+            for (CompletableFuture<FileRes> future : futures) {
+                FileRes fileRes = future.get();
+                if (Objects.nonNull(fileRes)) {
+                    resList.add(fileRes);
+                }
+            }
+        } catch (Exception e) {
+            log.error("下载错误", e);
+        }
+        return resList;
+    }
 }

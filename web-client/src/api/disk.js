@@ -18,5 +18,8 @@ export const diskAPI = {
     del: (data) => request.post('/api/disk/dir/ref/manager/del', data, {
         timeout: 60 * 1000
     }),
-    updateAvatar: (data) => request.post('/api/disk/dir/ref/manager/update/avatar', data)
+    updateAvatar: (data) => request.post('/api/disk/dir/ref/manager/update/avatar', data),
+    spider: (data) => request.post('api/disk/dir/ref/manager/spider', data, {
+        timeout: 10 * 60 * 1000
+    })
 }

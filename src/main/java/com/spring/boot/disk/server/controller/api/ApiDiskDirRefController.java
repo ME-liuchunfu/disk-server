@@ -55,4 +55,12 @@ public class ApiDiskDirRefController {
         vmUserFileService.updateDiskAvatar(avatarModel, userId);
         return Rs.ok();
     }
+
+    @PostMapping("/spider")
+    public Rs spider(@Validated @RequestBody SpiderModel spiderModel) {
+        Long userId = SecurityContext.getUserId();
+        String userName = SecurityContext.getUserName();
+        vmUserFileService.spider(spiderModel, userId, userName);
+        return Rs.ok();
+    }
 }

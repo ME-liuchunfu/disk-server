@@ -1,7 +1,10 @@
 package com.spring.boot.disk.server.service.impl;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,6 +14,7 @@ import com.spring.boot.disk.server.entity.po.VmUserFile;
 import com.spring.boot.disk.server.exception.AppException;
 import com.spring.boot.disk.server.mapper.VmUserFileMapper;
 import com.spring.boot.disk.server.mapstruct.ConvertFactory;
+import com.spring.boot.disk.server.model.FileRes;
 import com.spring.boot.disk.server.model.params.*;
 import com.spring.boot.disk.server.model.resp.DirSelect;
 import com.spring.boot.disk.server.model.resp.DiskDirScanResponse;
@@ -221,6 +225,29 @@ public class VmUserFileServiceImpl extends ServiceImpl<VmUserFileMapper, VmUserF
         VmUserFile vmUserFile = new VmUserFile();
         vmUserFile.setRefAvatarFileId(avatarModel.getFileId());
         this.update(vmUserFile, updateWrapper);
+    }
+
+    @Override
+    public void spider(SpiderModel spiderModel, Long userId, String userName) {
+        OuterDownModel downModel = new OuterDownModel();
+        downModel.setUrls(new String[]{spiderModel.getUrl()});
+        List<FileRes> fileRes = vmDiskFileService.outerAllDown(downModel, userName);
+        for (FileRes fileRe : fileRes) {
+            try {
+                VmUserFile vmUserFile = new VmUserFile();
+                vmUserFile.setParentId(spiderModel.getFolderId());
+                vmUserFile.setTitle(DateUtil.now() + fileRe.getOriginalFilename());
+                vmUserFile.setRefFileId(fileRe.getRefId());
+                vmUserFile.setRefAvatarFileId(fileRe.getCoverId());
+                vmUserFile.setFolder(DiskIItemType.FILE.getCode());
+                vmUserFile.setCreateTime(new Date());
+                vmUserFile.setOwner(userId);
+                this.saveOrUpdate(vmUserFile);
+            } catch (Exception e) {
+                log.error("spider 入库错误，url:{}, dirId:{}, file:{}",
+                        spiderModel.getUrl(), spiderModel.getFolderId(), JSON.toJSONString(fileRe), e);
+            }
+        }
     }
 
 }

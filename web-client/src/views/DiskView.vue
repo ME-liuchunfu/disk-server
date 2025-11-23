@@ -37,6 +37,7 @@
                 <el-button-group>
                     <el-button type="success" :icon="FolderAdd" @click="addFolderHandler"/>
                     <el-button type="primary" :icon="Share" />
+                    <el-button type="warning" :icon="ElemeFilled" @click="addSpiderHandle" />
                     <el-button type="primary" :icon="Delete" @click="btnDeleteHandle" />
                 </el-button-group>
             </el-space>
@@ -65,7 +66,7 @@
                         </div>
                       </el-tooltip>
                       <div class="file-meta">
-                        <span>{{ formatSize(file.size) }}</span>
+                        <span>{{ formatFileSize(file.size) }}</span>
                         <span>{{ file.createTime }}</span>
                       </div>
                     </div>
@@ -84,7 +85,7 @@
                     </el-table-column>
                     <el-table-column prop="title" label="文件名" min-width="200"></el-table-column>
                     <el-table-column prop="diskFileInfo" label="大小" width="100">
-                        <template #default="scope">{{ formatSize(scope.row.diskFileInfo?.fileSize) }}</template>
+                        <template #default="scope">{{ formatFileSize(scope.row.diskFileInfo?.fileSize) }}</template>
                     </el-table-column>
                     <el-table-column prop="diskFileInfo" label="类型" width="100">
                         <template #default="scope">{{ scope.row.diskFileInfo?.fileType || scope.row.folder === 1 ? "目录": "文件"}}</template>
@@ -115,6 +116,8 @@
         <rename-dir-dialog @flush="enterDirPath(null)"/>
         <!-- 新增封面 -->
         <add-disk-avatar-dialog @flush="enterDirPath(null)"/>
+        <!-- spider -->
+        <spider-dialog @flush="enterDirPath(null)"/>
         <!-- 右键菜单 -->
         <div
                 v-if="contextMenuFile"
@@ -132,12 +135,12 @@
 <script setup>
 import {ref, onMounted} from 'vue'
 import {
-    Folder, Grid, Refresh,
-    FolderOpened, File, Image, Video, Music,
-    Document,
-    Delete,
-    Share,
-    FolderAdd, ArrowLeftBold
+  Folder, Grid, Refresh,
+  FolderOpened, File, Image, Video, Music,
+  Document,
+  Delete,
+  Share,
+  FolderAdd, ArrowLeftBold, ElemeFilled
 } from '@element-plus/icons-vue'
 import { formatFileSize } from '@/utils/format'
 import { diskAPI } from '@/api/disk'
@@ -146,9 +149,12 @@ import { useLoadingStore } from '@/stores/loading';
 import AddFolder from '@/views/disk/AddDiskDir.vue'
 import RenameDirDialog from "@/views/disk/RenameDirDialog.vue";
 import {downloads} from "@/utils/downloads";
-import eventBus from '@/utils/eventBus'
 import AddDiskAvatarDialog from "@/views/disk/AddDiskAvatarDialog.vue";
+import SpiderDialog from "@/views/disk/SpiderDialog.vue";
 import {commonUtil} from "@/utils/utils";
+import {mediaEventHandle} from "@/utils/event/media-event";
+import {diskViewEvent} from "@/utils/event/diskview-event";
+
 
 // 状态管理
 const fileList = ref([])
@@ -201,26 +207,17 @@ const refreshFileList = () => {
 const getFileType = (data) => {
     if (data['folder'] === 0 && data['diskFileInfo']) {
         const fileType = (data['diskFileInfo']['fileType'] || '').toLowerCase();
-        if (containsArrType(["video", "mp4"], fileType)) {
+        if (commonUtil.inArray(["video", "mp4"], fileType)) {
             return 'video';
-        } else if (containsArrType(['image', "jpg", "png", "jpeg"], fileType)) {
+        } else if (commonUtil.inArray(['image', "jpg", "png", "jpeg"], fileType)) {
             return 'image';
-        } else if (containsArrType(["mp3", "flv", "m3u8"], fileType)) {
+        } else if (commonUtil.inArray(["mp3", "flv", "m3u8"], fileType)) {
             return 'audio';
-        } else if (containsArrType(["pdf", "html", "txt", "sql", "log", "css", "js", "java", "py"], fileType)) {
+        } else if (commonUtil.inArray(["pdf", "html", "txt", "sql", "log", "css", "js", "java", "py"], fileType)) {
             return 'document';
         }
     }
     return 'folder'
-}
-
-const containsArrType = (arr, str) => {
-    for (let k in arr) {
-        if (str.indexOf(arr[k])) {
-            return true;
-        }
-    }
-    return false;
 }
 
 // 获取文件图标
@@ -237,14 +234,6 @@ const getFileIcon = (type) => {
     }
 }
 
-// 格式化文件大小
-const formatSize = (size) => {
-    if (!size) {
-        return '';
-    }
-    return formatFileSize(size)
-}
-
 // 处理预览
 const handlePreview = async (file) => {
     if (!file['diskFileInfo']) {
@@ -256,64 +245,11 @@ const handlePreview = async (file) => {
     if (file['avatarUrl']) {
       coverUrl = file['avatarUrl'];
     }
-
-    // const downUrl = "http://localhost/1.mp3";
-    // const cover = "http://localhost/cover.png";
-    if (file['diskFileInfo']['fileType'] === 'mp3') {
-        eventBus.emit('media-event', {
-            type: 'audio',
-            value: {
-                title:file['title'],
-                url: downUrl,
-                cover: coverUrl
-            }
-        });
-        return
-    }
-  if (file['diskFileInfo']['fileType'] === 'mp4') {
-    eventBus.emit('media-event', {
-      type: 'video',
-      value: {
+    mediaEventHandle.handler(file['diskFileInfo']['fileType'], event => event({
         title:file['title'],
         url: downUrl,
         cover: coverUrl
-      }
-    });
-    return
-  }
-  if (file['diskFileInfo']['fileType'] === 'pdf') {
-    eventBus.emit('media-event', {
-      type: 'pdf',
-      value: {
-        title:file['title'],
-        url: downUrl,
-        cover: coverUrl
-      }
-    });
-    return
-  }
-  if (commonUtil.inArray(['doc', 'docx'], file['diskFileInfo']['fileType'])) {
-    eventBus.emit('media-event', {
-      type: 'doc',
-      value: {
-        title:file['title'],
-        url: downUrl,
-        cover: coverUrl
-      }
-    });
-    return
-  }
-  if (commonUtil.inArray(['xls', 'xlsx'], file['diskFileInfo']['fileType'])) {
-    eventBus.emit('media-event', {
-      type: 'xls',
-      value: {
-        title:file['title'],
-        url: downUrl,
-        cover: coverUrl
-      }
-    });
-    return
-  }
+    }));
 }
 
 // 处理下载
@@ -381,22 +317,16 @@ const handleDelete = (file) => {
 // 处理重命名
 const handleRename = (file) => {
   closeContextMenu();
-  eventBus.emit('event:disk:rename-dir', {
-    type: 'rename',
-    value: {
-      id: file.id,
-      title: file.title,
-      folder: file.folder
-    }
+  diskViewEvent.renameDir({
+    id: file.id,
+    title: file.title,
+    folder: file.folder
   })
 }
 
 // 更新封面
 const handleAddAvatar = (file) => {
-  eventBus.emit('event:disk:add-avatar', {
-    type: 'avatar',
-    value: {...file}
-  })
+  diskViewEvent.updateAvatar({...file})
 }
 
 const cacheDirHandle = () => {
@@ -449,6 +379,17 @@ const btnDeleteHandle = () => {
       })
 }
 
+const addSpiderHandle = () => {
+  let len = dirPathQueue.value.length;
+  if (len === 0) {
+    ElMessage.info('无法在根目录执行spider')
+    return
+  }
+  const id = dirPathQueue.value[len -1]['id']
+  const title = dirPathQueue.value[len -1]['title']
+  diskViewEvent.spider({id: id, title: title})
+}
+
 const addFolderHandler = async () =>{
     // 查询库
     let len = dirPathQueue.value.length;
@@ -465,12 +406,9 @@ const addFolderHandler = async () =>{
             selectIndex = folders.indexOf(ids[0])
           }
         }
-        eventBus.emit('event:disk:add-folder', {
-          type: 'addfolder',
-          value: {
-            folders: folders,
-            selectIndex: selectIndex
-          }
+        diskViewEvent.addFolder({
+          folders: folders,
+          selectIndex: selectIndex
         })
     } catch (err) {
         console.log(err)

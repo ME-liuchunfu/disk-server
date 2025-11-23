@@ -22,4 +22,6 @@ public interface VmUserFileService extends IService<VmUserFile> {
 
     void updateDiskAvatar(AddDiskAvatarModel avatarModel, Long userId);
 
+    void spider(SpiderModel spiderModel, Long userId, String userName);
+
 }

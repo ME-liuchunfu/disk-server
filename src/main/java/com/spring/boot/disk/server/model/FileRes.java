@@ -19,4 +19,8 @@ public class FileRes {
 
     private String hashValue;
 
+    private String coverPath;
+
+    private Long coverId;
+
 }
