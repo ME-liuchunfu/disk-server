@@ -2,7 +2,7 @@
     <div class="container">
         <h1 class="page-title">我的</h1>
 
-        <el-card class="user-card" shadow="hover" style="margin-bottom: 0.5rem;">
+        <el-card class="user-card" shadow="hover" style="margin-bottom: 0.25rem;">
             <div class="user-info">
                 <div class="custom-cell">
                     <span class="custom-cell__label">用户名</span>
@@ -89,11 +89,11 @@ const logout = () => {
 
 <style scoped>
 .user-card, .menu-card {
-    padding: 0.3rem;
+    padding: 0.15rem; /* 15px */
 }
 
 .user-info {
-    padding: 0.1rem;
+    padding: 0.05rem; /* 5px */
 }
 
 .mine-menu {
@@ -104,11 +104,11 @@ const logout = () => {
 .el-menu-item {
     display: flex;
     align-items: center;
-    padding: 0 0.2rem !important;
+    padding: 0 0.1rem !important; /* 10px */
 }
 
 .el-menu-item .el-icon {
-    margin-right: 0.2rem !important;
+    margin-right: 0.1rem !important; /* 10px */
     color: #409eff !important;
 }
 </style>

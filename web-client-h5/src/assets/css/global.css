@@ -9,52 +9,55 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-color: #f5f5f5;
+    background-color: #f8f9fa;
     color: #333;
-    font-size: 16px;
+    font-size: 0.16rem; /* 16px */
 }
 
-/* 移动端适配 */
+/* 关键：固定根字体大小为 100px（1rem=100px），不随屏幕变化 */
 html {
-    font-size: calc(100vw / 3.75); /* 375px设计稿基准，1rem=100px */
+    font-size: 100px !important; /* 强制固定，覆盖设备默认 */
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
 }
 
-@media (min-width: 750px) {
-    html {
-        font-size: 100px; /* 最大限制100px */
-    }
+/* 全局容器：固定宽度 3.75rem（375px），居中显示 */
+.app-container {
+    width: 3.75rem; /* 375px = 3.75rem */
+    min-height: 100vh;
+    margin: 0 auto;
+    background-color: #f8f9fa;
+    position: relative;
+    overflow-x: hidden;
 }
 
-/* 修复Element Plus移动端样式问题 */
-.el-container, .el-row, .el-col {
-    box-sizing: border-box;
-}
-
+/* Element Plus 组件 Rem 适配（固定尺寸） */
 .el-button {
-    border-radius: 0.45rem !important;
-    height: 0.9rem !important;
-    line-height: 0.9rem !important;
-    font-size: 0.32rem !important;
+    border-radius: 0.225rem !important; /* 22.5px */
+    height: 0.45rem !important; /* 45px */
+    line-height: 0.45rem !important;
+    font-size: 0.16rem !important; /* 16px */
     padding: 0 !important;
 }
 
 .el-input__wrapper {
-    border-radius: 0.45rem !important;
-    height: 0.9rem !important;
-    font-size: 0.32rem !important;
+    border-radius: 0.225rem !important;
+    height: 0.45rem !important;
+    font-size: 0.16rem !important;
 }
 
 .el-input__inner {
-    height: 0.9rem !important;
-    line-height: 0.9rem !important;
-    font-size: 0.32rem !important;
-    padding: 0 0.3rem !important;
+    height: 0.45rem !important;
+    line-height: 0.45rem !important;
+    font-size: 0.16rem !important;
+    padding: 0 0.15rem !important; /* 15px */
 }
 
 .el-card {
-    border-radius: 0.2rem !important;
+    border-radius: 0.1rem !important; /* 10px */
     border: none !important;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 0.02rem 0.12rem rgba(0, 0, 0, 0.05) !important;
 }
 
 .el-menu {
@@ -62,26 +65,26 @@ html {
 }
 
 .el-menu-item {
-    font-size: 0.32rem !important;
-    height: 1rem !important;
-    line-height: 1rem !important;
+    font-size: 0.16rem !important;
+    height: 0.5rem !important; /* 50px */
+    line-height: 0.5rem !important;
 }
 
 .el-icon {
-    font-size: 0.4rem !important;
+    font-size: 0.2rem !important; /* 20px */
 }
 
-/* 通用样式 */
+/* 通用样式（Rem 单位） */
 .container {
     width: 100%;
-    min-height: calc(100vh - 1.2rem); /* 减去底部导航高度 */
-    padding: 0.3rem;
+    min-height: calc(100vh - 0.6rem); /* 减去底部导航高度 0.6rem=60px */
+    padding: 0.15rem; /* 15px */
 }
 
 .page-title {
-    font-size: 0.4rem;
+    font-size: 0.2rem !important; /* 20px */
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem; /* 25px */
     color: #333;
     text-align: left;
 }
@@ -90,13 +93,13 @@ html {
 .custom-cell {
     display: flex;
     align-items: center;
-    padding: 0.25rem 0;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 0.32rem;
+    padding: 0.12rem 0; /* 12px */
+    border-bottom: 0.01rem solid #f0f0f0; /* 1px */
+    font-size: 0.16rem;
 }
 
 .custom-cell__label {
-    width: 1.5rem;
+    width: 0.75rem; /* 75px */
     color: #666;
 }
 
@@ -108,5 +111,10 @@ html {
 
 .custom-cell__arrow {
     color: #c0c4cc;
-    margin-left: 0.1rem;
+    margin-left: 0.05rem; /* 5px */
+}
+
+
+.flex-full {
+    flex: 1;
 }

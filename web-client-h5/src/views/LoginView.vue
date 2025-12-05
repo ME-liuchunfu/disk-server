@@ -55,7 +55,7 @@
                     <el-button
                         type="primary"
                         @click="handleLogin"
-                        class="login-btn"
+                        class="login-btn flex-full"
                         block
                         :loading="isLoading"
                     >
@@ -70,21 +70,13 @@
                     <router-link to="/register" class="link-item">注册账号</router-link>
                 </div>
             </el-form>
-
-            <!-- 游客登录 -->
-            <div class="guest-login">
-                <router-link to="/home" class="guest-link">
-                    <el-icon class="guest-icon"><ArrowRight /></el-icon>
-                    游客登录
-                </router-link>
-            </div>
         </div>
     </div>
 </template>
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { UserFilled, User, ArrowRight } from '@element-plus/icons-vue'
+import { UserFilled, User } from '@element-plus/icons-vue'
 import { ElMessage, ElForm, ElFormItem, ElInput, ElButton } from 'element-plus'
 import cacheInfo from "@/stores/cacheInfo";
 import {routerEvent} from "@/utils/event/router-event";
@@ -143,49 +135,49 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
-/* 页面容器 */
+/* 固定容器高度 100% */
 .login-page {
     width: 100%;
-    min-height: 100vh;
+    height: 100vh;
     position: relative;
     background-color: #f8f9fa;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0.5rem;
+    padding: 0.25rem 0.15rem; /* 25px 15px */
     overflow: hidden;
 }
 
-/* 背景装饰 */
+/* 背景装饰（Rem 尺寸） */
 .bg-decoration {
     position: absolute;
-    width: 8rem;
-    height: 8rem;
+    width: 3rem; /* 300px */
+    height: 3rem;
     border-radius: 50%;
     opacity: 0.15;
     z-index: 0;
 }
 
 .top-left {
-    top: -2rem;
-    left: -2rem;
+    top: -1rem; /* -100px */
+    left: -1rem;
     background: linear-gradient(135deg, #409eff, #69b1ff);
 }
 
 .bottom-right {
-    bottom: -2rem;
-    right: -2rem;
+    bottom: -1rem;
+    right: -1rem;
     background: linear-gradient(135deg, #722ed1, #9370db);
 }
 
-/* 登录卡片 */
+/* 登录卡片（Rem 尺寸） */
 .login-card {
     width: 100%;
-    max-width: 5rem;
+    max-width: 3.45rem; /* 345px */
     background-color: #fff;
-    border-radius: 0.4rem;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    padding: 0.8rem 0.6rem;
+    border-radius: 0.2rem; /* 20px */
+    box-shadow: 0 0.1rem 0.3rem rgba(0, 0, 0, 0.08);
+    padding: 0.4rem 0.3rem; /* 40px 30px */
     position: relative;
     z-index: 1;
     transform: translateY(0);
@@ -193,42 +185,42 @@ const handleLogin = async () => {
 }
 
 .login-card:hover {
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
-    transform: translateY(-0.1rem);
+    box-shadow: 0 0.15rem 0.35rem rgba(0, 0, 0, 0.12);
+    transform: translateY(-0.05rem); /* -5px */
 }
 
 /* 登录头部 */
 .login-header {
     text-align: center;
-    margin-bottom: 0.8rem;
+    margin-bottom: 0.4rem; /* 40px */
 }
 
 .login-logo {
-    width: 0.6rem;
-    height: 0.6rem;
+    width: 0.8rem; /* 80px */
+    height: 0.8rem;
     background: linear-gradient(135deg, #409eff, #722ed1);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 0.4rem;
-    box-shadow: 0 4px 15px rgba(64, 158, 255, 0.3);
+    margin: 0 auto 0.2rem; /* 20px */
+    box-shadow: 0 0.04rem 0.15rem rgba(64, 158, 255, 0.3);
 }
 
 .logo-icon {
-    font-size: 0.8rem !important;
+    font-size: 0.4rem !important; /* 40px */
     color: #fff;
 }
 
 .login-title {
-    font-size: 0.48rem;
+    font-size: 0.24rem; /* 24px */
     font-weight: 600;
     color: #1d2129;
-    margin-bottom: 0.15rem;
+    margin-bottom: 0.08rem; /* 8px */
 }
 
 .login-desc {
-    font-size: 0.28rem;
+    font-size: 0.14rem; /* 14px */
     color: #86909c;
 }
 
@@ -238,26 +230,26 @@ const handleLogin = async () => {
 }
 
 .form-item {
-    margin-bottom: 0.4rem;
+    margin-bottom: 0.2rem; /* 20px */
 }
 
 .custom-input {
-    border-radius: 0.45rem !important;
-    height: 0.95rem !important;
-    font-size: 0.32rem !important;
-    border: 1px solid #e5e6eb !important;
+    border-radius: 0.225rem !important; /* 22.5px */
+    height: 0.45rem !important; /* 45px */
+    font-size: 0.16rem !important; /* 16px */
+    border: 0.01rem solid #e5e6eb !important; /* 1px */
     transition: all 0.3s ease;
 }
 
 .custom-input:focus-within {
     border-color: #409eff !important;
-    box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.15) !important;
+    box-shadow: 0 0 0 0.02rem rgba(64, 158, 255, 0.15) !important; /* 2px */
 }
 
 .el-input__prefix {
     color: #86909c !important;
-    font-size: 0.4rem !important;
-    margin-right: 0.2rem !important;
+    font-size: 0.2rem !important; /* 20px */
+    margin-right: 0.1rem !important; /* 10px */
 }
 
 .custom-input:focus-within .el-input__prefix {
@@ -268,17 +260,17 @@ const handleLogin = async () => {
 .login-btn {
     background: linear-gradient(135deg, #409eff, #69b1ff) !important;
     border: none !important;
-    height: 1rem !important;
-    font-size: 0.34rem !important;
+    height: 0.5rem !important; /* 50px */
+    font-size: 0.17rem !important; /* 17px */
     font-weight: 500 !important;
-    border-radius: 0.5rem !important;
+    border-radius: 0.25rem !important; /* 25px */
     transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(64, 158, 255, 0.2);
+    box-shadow: 0 0.04rem 0.12rem rgba(64, 158, 255, 0.2);
 }
 
 .login-btn:hover {
     background: linear-gradient(135deg, #3689e6, #5ba0ff) !important;
-    box-shadow: 0 6px 16px rgba(64, 158, 255, 0.25);
+    box-shadow: 0 0.06rem 0.16rem rgba(64, 158, 255, 0.25);
 }
 
 .login-btn:active {
@@ -289,12 +281,12 @@ const handleLogin = async () => {
 .login-links {
     display: flex;
     justify-content: space-between;
-    margin-top: 0.3rem;
-    margin-bottom: 0.8rem;
+    margin-top: 0.15rem; /* 15px */
+    margin-bottom: 0.4rem; /* 40px */
 }
 
 .link-item {
-    font-size: 0.28rem;
+    font-size: 0.14rem; /* 14px */
     color: #409eff;
     text-decoration: none;
     transition: color 0.3s ease;
@@ -308,13 +300,13 @@ const handleLogin = async () => {
 /* 游客登录 */
 .guest-login {
     text-align: center;
-    margin-top: 0.5rem;
+    margin-top: 0.25rem; /* 25px */
 }
 
 .guest-link {
     display: inline-flex;
     align-items: center;
-    font-size: 0.3rem;
+    font-size: 0.15rem; /* 15px */
     color: #86909c;
     text-decoration: none;
     transition: all 0.3s ease;
@@ -325,27 +317,12 @@ const handleLogin = async () => {
 }
 
 .guest-icon {
-    font-size: 0.32rem !important;
-    margin-left: 0.1rem;
+    font-size: 0.16rem !important; /* 16px */
+    margin-left: 0.05rem; /* 5px */
     transition: transform 0.3s ease;
 }
 
 .guest-link:hover .guest-icon {
-    transform: translateX(0.05rem);
-}
-
-/* 适配小屏幕 */
-@media (max-width: 320px) {
-    .login-card {
-        padding: 0.6rem 0.4rem;
-    }
-
-    .login-title {
-        font-size: 0.42rem;
-    }
-
-    .custom-input, .login-btn {
-        height: 0.9rem !important;
-    }
+    transform: translateX(0.02rem); /* 2px */
 }
 </style>

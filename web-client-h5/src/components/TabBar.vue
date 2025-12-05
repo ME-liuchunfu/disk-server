@@ -22,18 +22,21 @@ import {toolBarRouter} from "@/router/toolbars";
 </script>
 
 <style scoped>
+/* 固定高度 0.6rem=60px */
 .tab-bar {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    height: 1.2rem;
+    width: 3.75rem; /* 与容器一致 */
+    height: 0.6rem;
     background-color: #fff;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 -0.02rem 0.1rem rgba(0, 0, 0, 0.05);
     z-index: 999;
+    margin: 0 auto; /* 居中 */
 }
 
 .tab-item {
@@ -52,11 +55,11 @@ import {toolBarRouter} from "@/router/toolbars";
 }
 
 .tab-icon {
-    font-size: 0.5rem !important;
-    margin-bottom: 0.1rem;
+    font-size: 0.24rem !important; /* 24px */
+    margin-bottom: 0.05rem; /* 5px */
 }
 
 .tab-text {
-    font-size: 0.28rem;
+    font-size: 0.14rem; /* 14px */
 }
 </style>
