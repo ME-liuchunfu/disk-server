@@ -41,4 +41,3 @@ build/
 node_modules
 
 web-client/node_modules/*
-/disk-client-h5/node_modules/*
