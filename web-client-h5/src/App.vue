@@ -2,7 +2,7 @@
     <div id="app">
         <router-view />
         <!-- 底部导航栏：根据路由元信息控制显示/隐藏 -->
-        <TabBar v-if="$route.meta.showTabBar" />
+        <TabBar v-if="$route.meta['showTabBar'] === true" />
     </div>
 </template>
 

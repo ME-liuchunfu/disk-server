@@ -41,6 +41,7 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { UserFilled } from '@element-plus/icons-vue'
 import { ElMessage, ElForm, ElFormItem, ElInput, ElButton } from 'element-plus'
+import cacheInfo from "@/stores/cacheInfo";
 
 const router = useRouter()
 const loginFormRef = ref(null)
@@ -68,6 +69,7 @@ const handleLogin = async () => {
         localStorage.setItem('isLogin', 'true')
         localStorage.setItem('username', loginForm.username)
         localStorage.setItem('phone', loginForm.phone)
+        cacheInfo.setLogin({username: loginForm.username, phone: loginForm.phone})
 
         ElMessage.success('登录成功')
 

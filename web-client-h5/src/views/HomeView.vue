@@ -13,7 +13,7 @@
                 <el-col :span="12" v-for="(item, index) in features" :key="index">
                     <div class="feature-item">
                         <el-icon class="feature-icon">
-                            <component :is="item.icon" />
+                            <component :is="'ElIcon'+item.icon" />
                         </el-icon>
                         <span class="feature-text">{{ item.name }}</span>
                     </div>
@@ -24,19 +24,13 @@
 </template>
 
 <script setup>
-import {
-    ShoppingCart,
-    Ticket,
-    Gift,
-    Star
-} from '@element-plus/icons-vue'
 import {ref} from "vue";
 
 const features = ref([
-    { name: '功能1', icon: ShoppingCart },
-    { name: '功能2', icon: Ticket },
-    { name: '功能3', icon: Gift },
-    { name: '功能4', icon: Star }
+    { name: '功能1', icon: "ShoppingCart" },
+    { name: '功能2', icon: "Ticket" },
+    { name: '功能3', icon: "Gift" },
+    { name: '功能4', icon: "Star" }
 ])
 
 </script>

@@ -1,30 +1,24 @@
 <template>
     <div class="tab-bar">
         <router-link
-                to="/home"
-                class="tab-item"
-                :class="{ active: $route.path === '/home' }"
+            :key="index"
+            v-for="(data, index) in toolBarRouter"
+            :to="data.path"
+            class="tab-item"
+            :class="{ active: $route.path === data.path }"
         >
-            <el-icon class="tab-icon">
-                <HomeFilled />
-            </el-icon>
-            <span class="tab-text">首页</span>
-        </router-link>
-        <router-link
-                to="/mine"
-                class="tab-item"
-                :class="{ active: $route.path === '/mine' }"
-        >
-            <el-icon class="tab-icon">
-                <UserFilled />
-            </el-icon>
-            <span class="tab-text">我的</span>
+            <component
+                v-if="data.meta['icon']"
+                :is="`ElIcon${data.meta['icon']}`"
+                class="tab-icon"
+            />
+            <span class="tab-text">{{data.meta['title']}}</span>
         </router-link>
     </div>
 </template>
 
 <script setup>
-import { HomeFilled, UserFilled } from '@element-plus/icons-vue'
+import {toolBarRouter} from "@/router/toolbars";
 </script>
 
 <style scoped>
