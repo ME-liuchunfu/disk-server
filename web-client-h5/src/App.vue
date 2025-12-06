@@ -13,14 +13,10 @@ import TabBar from '@/components/TabBar.vue'
 </script>
 
 <style>
-.app-container {
-    display: flex;
-    overflow: hidden;
-}
 .main-content {
     flex: 1;
+    height: auto;
     box-sizing: border-box;
-    padding-bottom: 0.6rem;
-    overflow: hidden;
+    overflow-y: scroll;
 }
 </style>

@@ -38,6 +38,7 @@ const infos = {
         if (value) {
             return commonUtil.parseJson(value);
         }
+        return null
     }
 }
 

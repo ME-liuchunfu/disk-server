@@ -13,8 +13,8 @@
                         <UserFilled />
                     </el-icon>
                 </div>
-                <h2 class="login-title">欢迎回来</h2>
-                <p class="login-desc">请登录您的账号继续使用</p>
+                <h2 class="login-title">欢迎使用</h2>
+                <p class="login-desc">请注册您的账号继续使用</p>
             </div>
 
             <!-- 登录表单 -->
@@ -50,6 +50,43 @@
                         @keydown.enter="handleLogin"
                     />
                 </el-form-item>
+                <el-form-item prop="password1" class="form-item">
+                  <el-input
+                      v-model="loginForm.password1"
+                      placeholder="请再次输入密码"
+                      type="password"
+                      class="custom-input"
+                      :prefix="User"
+                      :focus="isPasswordFocused"
+                      @focus="isPasswordFocused = true"
+                      @blur="isPasswordFocused = false"
+                      @keydown.enter="handleLogin"
+                  />
+                </el-form-item>
+
+                <el-form-item prop="nickName" class="form-item">
+                  <el-input
+                      v-model="loginForm.nickName"
+                      placeholder="请输入昵称"
+                      class="custom-input"
+                      :prefix="User"
+                      :focus="isNickNameFocused"
+                      @focus="isNickNameFocused = true"
+                      @blur="isNickNameFocused = false"
+                  />
+                </el-form-item>
+
+                <el-form-item prop="email" class="form-item">
+                  <el-input
+                      v-model="loginForm.email"
+                      placeholder="请输入邮箱"
+                      class="custom-input"
+                      :prefix="User"
+                      :focus="isEmailFocused"
+                      @focus="isEmailFocused = true"
+                      @blur="isEmailFocused = false"
+                  />
+                </el-form-item>
 
                 <!-- 登录按钮 -->
                 <el-form-item class="form-item">
@@ -60,15 +97,14 @@
                         block
                         :loading="isLoading"
                     >
-                        <span v-if="!isLoading">登录</span>
-                        <span v-else>登录中...</span>
+                        <span v-if="!isLoading">注册</span>
+                        <span v-else>注册中...</span>
                     </el-button>
                 </el-form-item>
 
                 <!-- 辅助链接 -->
                 <div class="login-links">
-                    <router-link to="/forgot-password" class="link-item">忘记密码？</router-link>
-                    <router-link to="/register" class="link-item">注册账号</router-link>
+                    <router-link to="/login" class="link-item">已有账号</router-link>
                 </div>
             </el-form>
         </div>
@@ -79,19 +115,23 @@
 import { ref, reactive } from 'vue'
 import { UserFilled, User } from '@element-plus/icons-vue'
 import { ElMessage, ElForm, ElFormItem, ElInput, ElButton } from 'element-plus'
-import cacheInfo from "@/stores/cacheInfo";
-import {routerEvent} from "@/utils/event/router-event";
 import {authAPI} from "@/api/login";
 
 const loginFormRef = ref(null)
 const isLoading = ref(false) // 登录加载状态
 const isUsernameFocused = ref(false) // 用户名输入框聚焦状态
 const isPhoneFocused = ref(false) // 手机号输入框聚焦状态
+const isPasswordFocused = ref(false) // 手机号输入框聚焦状态
+const isNickNameFocused = ref(false) // 手机号输入框聚焦状态
+const isEmailFocused = ref(false) // 手机号输入框聚焦状态
 
 // 登录表单数据
 const loginForm = reactive({
     username: '',
-    password: ''
+    nickName: '',
+    password: '',
+    email: null,
+    password1: '',
 })
 
 // 表单验证规则
@@ -103,6 +143,14 @@ const loginRules = reactive({
     password: [
         { required: true, message: '请输入密码', trigger: 'blur' },
         { min: 6, max: 20, message: '用户名长度为6-20个字符', trigger: 'blur' }
+    ],
+    password1: [
+      { required: true, message: '请输入密码', trigger: 'blur' },
+      { min: 6, max: 20, message: '用户名长度为6-20个字符', trigger: 'blur' }
+    ],
+    nickName: [
+      { required: true, message: '请输入昵称', trigger: 'blur' },
+      { min: 6, max: 20, message: '昵称长度为6-20个字符', trigger: 'blur' }
     ]
 })
 
@@ -112,23 +160,24 @@ const handleLogin = async () => {
         // 表单验证
         await loginFormRef.value.validate()
 
+        if (loginForm.password !== loginForm.password1) {
+          ElMessage.info('两次密码不匹配')
+          return
+        }
         // 模拟登录加载
         isLoading.value = true
-        const res = await authAPI.login({
+        await authAPI.register({
             userName: loginForm.username,
+            nickName: loginForm.nickName,
             password: loginForm.password,
-            readme: false,
+            email: loginForm.email,
             ac: "ac"
         });
         isLoading.value = false
-        if (res && res['tokenName']) {
-            ElMessage.success('登录成功，欢迎回来～')
-            cacheInfo.setLogin({'tokenValue': res['tokenValue'], 'tokenName': res['tokenName']})
-            routerEvent.home()
-        }
+        ElMessage.success('注册成功')
     } catch (error) {
-        ElMessage.error('登录失败，请检查输入')
-        console.error('登录表单验证失败:', error)
+        // ElMessage.error('注册失败，请检查输入')
+        console.error('注册表单验证失败:', error)
     }
 }
 </script>

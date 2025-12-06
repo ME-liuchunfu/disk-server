@@ -41,6 +41,7 @@ export const routerEvent = {
             return;
         }
         if (res.code === 401) return routerEvent.auth;
+        if (res.code === 500) return new Promise(res.msg || "服务器繁忙")
     },
     reponseCode: (error) => {
         // 网络错误处理

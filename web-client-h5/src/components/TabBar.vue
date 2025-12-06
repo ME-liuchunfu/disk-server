@@ -19,11 +19,15 @@
 
 <script setup>
 import router from "@/router";
+import {useRoute} from "vue-router";
 import {toolBarRouter} from "@/router/toolbars";
-import {tooBarEvent} from "@/utils/event/toolbar-event";
+
+const route = useRoute()
 
 const goPage = (path) => {
-  tooBarEvent.change(path)
+  if (route.path === path) {
+    return;
+  }
   router.push(path)
 }
 
@@ -32,10 +36,10 @@ const goPage = (path) => {
 <style scoped>
 /* 固定高度 0.6rem=60px */
 .tab-bar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+  /* position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;*/
     width: 100%; /* 与容器一致 */
     height: 0.6rem;
     background-color: #fff;
@@ -56,6 +60,7 @@ const goPage = (path) => {
     color: #666;
     text-decoration: none;
     padding: 0.1rem 0;
+    cursor: pointer;
 }
 
 .tab-item.active {

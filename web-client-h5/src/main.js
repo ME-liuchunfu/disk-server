@@ -8,6 +8,7 @@ import '@/assets/css/global.css' // 引入全局样式
 // 引入Element Plus图标
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import {toolBarRouter} from "@/router/toolbars";
+import {accountRouter} from "@/router/account";
 
 const app = createApp(App)
 
@@ -17,6 +18,9 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 }
 
 toolBarRouter.forEach(item =>{
+    router.addRoute(item.name, item);
+})
+accountRouter.forEach(item=>{
     router.addRoute(item.name, item);
 })
 

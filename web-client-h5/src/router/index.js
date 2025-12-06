@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import cacheInfo from "@/stores/cacheInfo";
-import LoginView from '@/views/LoginView.vue'
+import LoginView from '@/views/account/LoginView.vue'
 
 
 const routes = [

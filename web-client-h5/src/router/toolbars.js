@@ -1,10 +1,13 @@
 
+import HomeView from "@/views/layout/HomeView.vue"
+import DiskView from "@/views/layout/DiskView.vue";
+import MineView from "@/views/layout/MineView.vue";
 
 export const toolBarRouter = [
     {
         path: '/home',
         name: 'HomeView',
-        component: ()=>import("@/views/HomeView.vue"),
+        component: HomeView,
         meta: {
             title: '首页',
             icon: 'HomeFilled',
@@ -12,9 +15,19 @@ export const toolBarRouter = [
         }
     },
     {
+        path: '/disk',
+        name: 'DiskView',
+        component: DiskView,
+        meta: {
+            title: '磁盘',
+            icon: 'ChromeFilled',
+            showTabBar: true // 显示底部导航
+        }
+    },
+    {
         path: '/mine',
         name: 'MineView',
-        component: ()=>import("@/views/MineView.vue"),
+        component: MineView,
         meta: {
             title: '我的',
             icon: 'UserFilled',
