@@ -17,5 +17,12 @@ export const commonUtil = {
         } catch (e) {
             return data.toString();
         }
+    },
+    parseJson(value) {
+        try {
+            return JSON.parse(value);
+        } catch (_) {
+            return value;
+        }
     }
 }

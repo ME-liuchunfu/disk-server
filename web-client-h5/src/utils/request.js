@@ -36,6 +36,7 @@ service.interceptors.request.use(
 service.interceptors.response.use(
     (response) => {
         const res = response.data
+        routerEvent.reponseDataCode(res['code'] || 200, res['msg']);
         // 自定义业务状态码处理
         const handler = routerEvent.primis(res);
         if (handler) {

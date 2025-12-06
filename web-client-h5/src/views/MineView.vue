@@ -6,11 +6,11 @@
             <div class="user-info">
                 <div class="custom-cell">
                     <span class="custom-cell__label">用户名</span>
-                    <span class="custom-cell__value">{{ username }}</span>
+                    <span class="custom-cell__value">{{ userInfo?.name }}</span>
                 </div>
                 <div class="custom-cell">
-                    <span class="custom-cell__label">手机号</span>
-                    <span class="custom-cell__value">{{ phone }}</span>
+                    <span class="custom-cell__label">邮箱</span>
+                    <span class="custom-cell__value">{{ userInfo?.email }}</span>
                 </div>
                 <div class="custom-cell" @click="logout" style="cursor: pointer;">
                     <span class="custom-cell__label">退出登录</span>
@@ -62,8 +62,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
 import {
     ArrowRight,
     Setting,
@@ -71,20 +70,34 @@ import {
     HelpFilled,
     InfoFilled
 } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus'
+import cacheInfo from "@/stores/cacheInfo";
+import {userAPI} from "@/api/userinfo";
+import router from "@/router";
+import {EVENT_KEYS} from "@/utils/event/toolbar-event";
+import {eventBus} from "@/utils/eventBus";
 
-const router = useRouter()
-const username = ref(localStorage.getItem('username') || '用户')
-const phone = ref(localStorage.getItem('phone') || '未绑定')
+const userInfo = ref(null)
 
 // 退出登录
 const logout = () => {
-    localStorage.removeItem('isLogin')
-    localStorage.removeItem('username')
-    localStorage.removeItem('phone')
-    ElMessage.success('退出登录成功')
+    cacheInfo.logout()
     router.push('/login')
 }
+
+const toolbarCall = async (event) => {
+  if (event['type'] === 'mine') {
+    const data = await userAPI.info()
+    cacheInfo.setUserInfo(data);
+    userInfo.value = data;
+  }
+}
+eventBus.on(EVENT_KEYS.TOOLBAR_CHANGE, toolbarCall);
+
+onMounted(()=>{
+  userInfo.value = cacheInfo.getUserInfo()
+})
+
+
 </script>
 
 <style scoped>

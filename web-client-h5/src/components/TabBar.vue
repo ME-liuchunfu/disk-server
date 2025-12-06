@@ -1,9 +1,9 @@
 <template>
     <div class="tab-bar">
-        <router-link
+        <span
             :key="index"
             v-for="(data, index) in toolBarRouter"
-            :to="data.path"
+            @click="goPage(data.path)"
             class="tab-item"
             :class="{ active: $route.path === data.path }"
         >
@@ -13,12 +13,20 @@
                 class="tab-icon"
             />
             <span class="tab-text">{{data.meta['title']}}</span>
-        </router-link>
+        </span>
     </div>
 </template>
 
 <script setup>
+import router from "@/router";
 import {toolBarRouter} from "@/router/toolbars";
+import {tooBarEvent} from "@/utils/event/toolbar-event";
+
+const goPage = (path) => {
+  tooBarEvent.change(path)
+  router.push(path)
+}
+
 </script>
 
 <style scoped>
@@ -28,7 +36,7 @@ import {toolBarRouter} from "@/router/toolbars";
     bottom: 0;
     left: 0;
     right: 0;
-    width: 3.75rem; /* 与容器一致 */
+    width: 100%; /* 与容器一致 */
     height: 0.6rem;
     background-color: #fff;
     display: flex;
@@ -36,7 +44,6 @@ import {toolBarRouter} from "@/router/toolbars";
     align-items: center;
     box-shadow: 0 -0.02rem 0.1rem rgba(0, 0, 0, 0.05);
     z-index: 999;
-    margin: 0 auto; /* 居中 */
 }
 
 .tab-item {
@@ -44,10 +51,11 @@ import {toolBarRouter} from "@/router/toolbars";
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 50%;
+    flex: 1;
     height: 100%;
     color: #666;
     text-decoration: none;
+    padding: 0.1rem 0;
 }
 
 .tab-item.active {
@@ -55,11 +63,11 @@ import {toolBarRouter} from "@/router/toolbars";
 }
 
 .tab-icon {
-    font-size: 0.24rem !important; /* 24px */
+    font-size: 0.26rem !important; /* 24px */
     margin-bottom: 0.05rem; /* 5px */
 }
 
 .tab-text {
-    font-size: 0.14rem; /* 14px */
+    font-size: 0.12rem; /* 14px */
 }
 </style>

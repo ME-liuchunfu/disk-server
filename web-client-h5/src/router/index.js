@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import {toolBarRouter} from "@/router/toolbars";
 import cacheInfo from "@/stores/cacheInfo";
 import LoginView from '@/views/LoginView.vue'
 
@@ -19,7 +18,6 @@ const routes = [
     }
 ]
 
-routes.splice(1, 0, ...toolBarRouter)
 
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),

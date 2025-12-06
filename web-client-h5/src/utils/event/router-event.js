@@ -1,17 +1,10 @@
-import eventBus from "@/utils/eventBus";
+import {eventCi, eventBus} from "@/utils/eventBus";
 import {ElMessage} from "element-plus";
 import router from "@/router";
 
 
 const EVENT_KEYS = {
     PAGE_CHANGE: 'router:change'
-}
-
-const event = (key, type, value) => {
-    eventBus.emit(key, {
-        type: type,
-        value: value
-    })
 }
 
 eventBus.on(EVENT_KEYS.PAGE_CHANGE, data => {
@@ -25,18 +18,23 @@ eventBus.on(EVENT_KEYS.PAGE_CHANGE, data => {
 })
 
 const codeHandler = {
-    404: () => ElMessage.error('请求的接口不存在'),
-    500: () => ElMessage.error('服务器内部错误'),
+    404: (msg) => ElMessage.error(msg || '请求的接口不存在'),
+    500: (msg) => ElMessage.error(msg || '服务器内部错误'),
 }
 
 export const routerEvent = {
-    go: (page)=> event(EVENT_KEYS.PAGE_CHANGE, 'g', page),
-    back: ()=> event(EVENT_KEYS.PAGE_CHANGE, 'b'),
+    go: (page)=> eventCi(EVENT_KEYS.PAGE_CHANGE, 'g', page),
+    back: ()=> eventCi(EVENT_KEYS.PAGE_CHANGE, 'b'),
     auth: (res)=> {
         ElMessage.error('登录已过期，请重新登录')
         localStorage.clear();
         routerEvent.go('/login')
         return Promise.reject(res.msg || '未授权访问');
+    },
+    login() {
+        localStorage.clear();
+        ElMessage.success('退出登录成功')
+        routerEvent.go('/login')
     },
     primis: (res) => {
         if (res.code === 200) {
@@ -55,6 +53,11 @@ export const routerEvent = {
             codeHandler[code](code);
         } else {
             ElMessage.error(`请求失败（${code}）`)
+        }
+    },
+    reponseDataCode: (code, msg) => {
+        if (codeHandler[code]) {
+            codeHandler[code](msg);
         }
     },
     home: ()=> routerEvent.go('/home'),

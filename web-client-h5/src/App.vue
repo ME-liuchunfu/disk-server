@@ -1,5 +1,5 @@
 <template>
-    <div id="app" class="app-container">
+    <div class="app-container">
         <div class="main-content">
             <router-view />
         </div>
@@ -13,14 +13,6 @@ import TabBar from '@/components/TabBar.vue'
 </script>
 
 <style>
-#app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-    background-color: #eee; /* 大屏两侧背景色 */
-}
 .app-container {
     display: flex;
     overflow: hidden;

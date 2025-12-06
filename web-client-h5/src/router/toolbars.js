@@ -1,11 +1,10 @@
-import HomeView from "@/views/HomeView.vue";
-import MineView from "@/views/MineView.vue";
+
 
 export const toolBarRouter = [
     {
         path: '/home',
         name: 'HomeView',
-        component: HomeView,
+        component: ()=>import("@/views/HomeView.vue"),
         meta: {
             title: '首页',
             icon: 'HomeFilled',
@@ -15,7 +14,7 @@ export const toolBarRouter = [
     {
         path: '/mine',
         name: 'MineView',
-        component: MineView,
+        component: ()=>import("@/views/MineView.vue"),
         meta: {
             title: '我的',
             icon: 'UserFilled',

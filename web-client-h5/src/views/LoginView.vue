@@ -47,6 +47,7 @@
                         :focus="isPhoneFocused"
                         @focus="isPhoneFocused = true"
                         @blur="isPhoneFocused = false"
+                        @keydown.enter="handleLogin"
                     />
                 </el-form-item>
 
@@ -120,12 +121,10 @@ const handleLogin = async () => {
             ac: "ac"
         });
         isLoading.value = false
-        if (res['tokenName']) {
+        if (res && res['tokenName']) {
             ElMessage.success('登录成功，欢迎回来～')
             cacheInfo.setLogin({'tokenValue': res['tokenValue'], 'tokenName': res['tokenName']})
             routerEvent.home()
-        } else {
-            ElMessage.success(res['msg'] || '登录失败')
         }
     } catch (error) {
         ElMessage.error('登录失败，请检查输入')

@@ -2,7 +2,11 @@
 import mitt from 'mitt'
 
 // 创建事件发射器实例
-const eventBus = mitt()
+export const eventBus = mitt()
 
-// 导出事件发射器
-export default eventBus
+export const eventCi = (key, type, value) => {
+    eventBus.emit(key, {
+        type: type,
+        value: value
+    })
+}

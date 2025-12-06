@@ -7,6 +7,7 @@ import '@/assets/css/global.css' // 引入全局样式
 
 // 引入Element Plus图标
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+import {toolBarRouter} from "@/router/toolbars";
 
 const app = createApp(App)
 
@@ -14,6 +15,10 @@ const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(`ElIcon${key}`, component)
 }
+
+toolBarRouter.forEach(item =>{
+    router.addRoute(item.name, item);
+})
 
 app.use(ElementPlus)
 app.use(router).mount('#app')
